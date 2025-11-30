@@ -21,15 +21,15 @@ export default function ToursPage() {
         {/* Header with Button */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Tours</h1>
-            <p className="text-slate-500 mt-1">Manage all tours and experiences</p>
+            <h1 className="text-3xl font-bold text-slate-900">Туры</h1>
+            <p className="text-slate-500 mt-1">Управление всеми турами и впечатлениями</p>
           </div>
           <Link
             href="/admin/tours/create-new"
             className="flex items-center gap-2 bg-accent text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition"
           >
             <Plus className="w-5 h-5" />
-            Create New
+            Создать новый
           </Link>
         </div>
 

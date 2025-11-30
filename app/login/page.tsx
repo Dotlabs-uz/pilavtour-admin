@@ -33,14 +33,14 @@ export default function LoginPage() {
       const { auth, db } = getFirebaseServices()
 
       // Sign in with Firebase
-      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password)
+      const userCredential = await signInWithEmailAndPassword(auth!, data.email, data.password)
 
       // Check if user is admin
-      const adminDoc = await getDoc(doc(db, "admins", userCredential.user.uid))
+      const adminDoc = await getDoc(doc(db!, "admins", userCredential.user.uid))
 
       if (!adminDoc.exists()) {
-        await auth.signOut()
-        setError("You do not have admin access")
+        await auth!.signOut()
+        setError("У вас нет доступа администратора")
         setIsLoading(false)
         return
       }
@@ -61,7 +61,7 @@ export default function LoginPage() {
 
       router.push("/admin/users")
     } catch (err: any) {
-      setError(err.message || "Login failed")
+      setError(err.message || "Ошибка входа")
     } finally {
       setIsLoading(false)
     }
@@ -78,7 +78,7 @@ export default function LoginPage() {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Pilav Tours</h1>
-          <p className="text-slate-300">Admin Dashboard</p>
+          <p className="text-slate-300">Панель администратора</p>
         </div>
 
         {/* Form Card */}
@@ -98,7 +98,7 @@ export default function LoginPage() {
 
             {/* Password Input */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Пароль</label>
               <input
                 {...register("password")}
                 type="password"
@@ -124,12 +124,12 @@ export default function LoginPage() {
               {isLoading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Logging in...
+                  Вход...
                 </>
               ) : (
                 <>
                   <ArrowRight className="w-4 h-4" />
-                  Sign In
+                  Войти
                 </>
               )}
             </button>
@@ -137,7 +137,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-slate-400 text-sm mt-6">© 2025 Pilav Tours. All rights reserved.</p>
+        <p className="text-center text-slate-400 text-sm mt-6">© 2025 Pilav Tours. Все права защищены.</p>
       </div>
     </div>
   )

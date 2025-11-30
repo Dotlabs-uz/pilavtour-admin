@@ -8,8 +8,8 @@ export default function CreateTourPage() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Create New Tour</h1>
-          <p className="text-slate-500 mt-1">Add a new tour to your catalog</p>
+          <h1 className="text-3xl font-bold text-slate-900">Создать новый тур</h1>
+          <p className="text-slate-500 mt-1">Добавить новый тур в каталог</p>
         </div>
 
         <TourForm />

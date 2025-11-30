@@ -9,10 +9,10 @@ import { useState } from "react"
 import { Users, MapPin, FileText, Star, X, Menu, LogOut } from "lucide-react"
 
 const menuItems = [
-  { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/tours", label: "Tours", icon: MapPin },
-  { href: "/admin/articles", label: "Articles", icon: FileText },
-  { href: "/admin/reviews", label: "Reviews", icon: Star },
+  { href: "/admin/users", label: "Пользователи", icon: Users },
+  { href: "/admin/tours", label: "Туры", icon: MapPin },
+  { href: "/admin/articles", label: "Статьи", icon: FileText },
+  { href: "/admin/reviews", label: "Отзывы", icon: Star },
 ]
 
 export function Sidebar() {
@@ -52,13 +52,13 @@ export function Sidebar() {
         {/* Logo */}
         <div className="mb-8 pt-4">
           <h2 className="text-2xl font-bold">Pilav Tours</h2>
-          <p className="text-slate-400 text-sm">Admin Dashboard</p>
+          <p className="text-slate-400 text-sm">Панель администратора</p>
         </div>
 
         {/* Menu Items */}
         <nav className="space-y-2 mb-8">
           {menuItems.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname === href
+            const isActive = pathname.includes(href);
             return (
               <Link
                 key={href}
@@ -82,7 +82,7 @@ export function Sidebar() {
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition w-full"
           >
             <LogOut className="w-5 h-5" />
-            <span>Logout</span>
+            <span>Выйти</span>
           </button>
         </div>
       </aside>

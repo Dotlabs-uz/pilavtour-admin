@@ -18,9 +18,9 @@ export function ReviewsFilters({ filters, setFilters }: ReviewsFiltersProps) {
           onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
           className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
         >
-          <option value="">Created Date</option>
-          <option value="desc">Newest First</option>
-          <option value="asc">Oldest First</option>
+          <option value="">Дата создания</option>
+          <option value="desc">Сначала новые</option>
+          <option value="asc">Сначала старые</option>
         </select>
 
         {/* Rating Sort */}
@@ -29,9 +29,9 @@ export function ReviewsFilters({ filters, setFilters }: ReviewsFiltersProps) {
           onChange={(e) => setFilters({ ...filters, rateSort: e.target.value })}
           className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
         >
-          <option value="">All Ratings</option>
-          <option value="asc">Rating Low to High</option>
-          <option value="desc">Rating High to Low</option>
+          <option value="">Все рейтинги</option>
+          <option value="asc">Рейтинг от низкого к высокому</option>
+          <option value="desc">Рейтинг от высокого к низкому</option>
         </select>
       </div>
     </div>

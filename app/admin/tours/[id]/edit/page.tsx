@@ -12,8 +12,8 @@ export default function EditTourPage() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Edit Tour</h1>
-          <p className="text-slate-500 mt-1">Update tour information</p>
+          <h1 className="text-3xl font-bold text-slate-900">Редактировать тур</h1>
+          <p className="text-slate-500 mt-1">Обновить информацию о туре</p>
         </div>
 
         <TourForm tourId={tourId} />

@@ -16,8 +16,8 @@ export default function ReviewsPage() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Reviews</h1>
-          <p className="text-slate-500 mt-1">Manage customer reviews and ratings</p>
+          <h1 className="text-3xl font-bold text-slate-900">Отзывы</h1>
+          <p className="text-slate-500 mt-1">Управление отзывами и оценками клиентов</p>
         </div>
 
         {/* Filters */}

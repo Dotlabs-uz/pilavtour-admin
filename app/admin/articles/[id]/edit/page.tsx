@@ -12,8 +12,8 @@ export default function EditArticlePage() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Edit Article</h1>
-          <p className="text-slate-500 mt-1">Update article information</p>
+          <h1 className="text-3xl font-bold text-slate-900">Редактировать статью</h1>
+          <p className="text-slate-500 mt-1">Обновить информацию о статье</p>
         </div>
 
         <ArticleForm articleId={articleId} />

@@ -1,26 +1,8 @@
 import { z } from "zod"
 
-const multiLangTextSchema = z.object({
-  uz: z.string().max(50, "Max 50 characters"),
-  ru: z.string().max(50, "Max 50 characters"),
-  en: z.string().max(50, "Max 50 characters"),
-  sp: z.string().max(50, "Max 50 characters"),
-  uk: z.string().max(50, "Max 50 characters"),
-  it: z.string().max(50, "Max 50 characters"),
-  ge: z.string().max(50, "Max 50 characters"),
-})
-
 export const tourSchema = z.object({
-  title: multiLangTextSchema,
-  description: multiLangTextSchema.extend({
-    uz: z.string().max(1000),
-    ru: z.string().max(1000),
-    en: z.string().max(1000),
-    sp: z.string().max(1000),
-    uk: z.string().max(1000),
-    it: z.string().max(1000),
-    ge: z.string().max(1000),
-  }),
+  title: z.string().min(1, "Название обязательно").max(200, "Максимум 200 символов"),
+  description: z.string().min(1, "Описание обязательно").max(5000, "Максимум 5000 символов"),
   price: z.string(),
   style: z.enum(["Premium", "Econom", "Standart", "Lux"]),
   duration: z.object({
@@ -31,10 +13,10 @@ export const tourSchema = z.object({
   images: z.array(z.string()).min(1, "At least one image required"),
   itinerary: z.array(
     z.object({
-      title: z.string().max(30),
-      description: z.string().max(200),
+      title: z.string().min(1, "Название обязательно").max(100, "Максимум 100 символов"),
+      description: z.string().min(1, "Описание обязательно").max(500, "Максимум 500 символов"),
     }),
-  ),
+  ).optional(),
   dates: z.array(
     z.object({
       startDate: z.date(),
@@ -42,11 +24,11 @@ export const tourSchema = z.object({
       status: z.enum(["Available", "Few spots", "Sold out"]),
       price: z.string(),
     }),
-  ),
+  ).optional(),
   inclusions: z.object({
     included: z.array(z.string()),
     notIncluded: z.array(z.string()),
-  }),
+  }).optional(),
   location: z.string(),
 })
 

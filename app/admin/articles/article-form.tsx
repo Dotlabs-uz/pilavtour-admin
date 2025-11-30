@@ -12,6 +12,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { LANGUAGES, type MultiLangText } from "@/types"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/lib/auth-store"
+import { onAuthStateChanged } from "firebase/auth"
+import { translateText } from "@/lib/translation"
 
 interface ArticleFormProps {
   articleId?: string
@@ -44,10 +46,16 @@ export function ArticleForm({ articleId }: ArticleFormProps) {
   const loadArticle = async () => {
     try {
       const { db } = getFirebaseServices()
-      const articleDoc = await getDoc(doc(db, "articles", articleId!))
+      const articleDoc = await getDoc(doc(db!, "articles", articleId!))
 
       if (articleDoc.exists()) {
-        reset(articleDoc.data() as any)
+        const data = articleDoc.data()
+        // Load with Russian title/description as default (or first available)
+        reset({
+          title: data.title?.ru || data.title?.en || data.title?.uz || "",
+          description: data.description?.ru || data.description?.en || data.description?.uz || "",
+          coverImage: data.coverImage || "",
+        })
       }
     } catch (error) {
       console.error("Error loading article:", error)
@@ -62,8 +70,40 @@ export function ArticleForm({ articleId }: ArticleFormProps) {
 
     setUploadingImage(true)
     try {
-      const { storage } = getFirebaseServices()
-      const storageRef = ref(storage, `articles/${articleId || "new"}/${Date.now()}-${file.name}`)
+      const { storage, auth } = getFirebaseServices()
+      
+      // Ensure user is authenticated before uploading
+      if (!auth?.currentUser) {
+        // Wait for auth state to be ready (with timeout)
+        await new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            unsubscribe()
+            reject(new Error("Таймаут ожидания авторизации"))
+          }, 5000)
+          
+          const unsubscribe = onAuthStateChanged(auth!, (user) => {
+            clearTimeout(timeout)
+            unsubscribe()
+            if (user) {
+              resolve()
+            } else {
+              reject(new Error("Пользователь не авторизован. Пожалуйста, войдите снова."))
+            }
+          })
+        })
+      }
+
+      // Refresh the auth token to ensure it's valid for Storage
+      if (auth?.currentUser) {
+        try {
+          await auth.currentUser.getIdToken(true)
+        } catch (tokenError) {
+          console.error("Error refreshing token:", tokenError)
+          throw new Error("Ошибка обновления токена авторизации")
+        }
+      }
+
+      const storageRef = ref(storage!, `articles/${articleId || "new"}/${Date.now()}-${file.name}`)
       await uploadBytes(storageRef, file)
       const url = await getDownloadURL(storageRef)
 
@@ -71,9 +111,10 @@ export function ArticleForm({ articleId }: ArticleFormProps) {
         ...watch(),
         coverImage: url,
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading image:", error)
-      alert("Failed to upload image")
+      const errorMessage = error.message || "Не удалось загрузить изображение"
+      alert(errorMessage)
     } finally {
       setUploadingImage(false)
     }
@@ -81,15 +122,23 @@ export function ArticleForm({ articleId }: ArticleFormProps) {
 
   const onSubmit = async (data: ArticleFormData) => {
     if (!user) {
-      alert("You must be logged in")
+      alert("Вы должны быть авторизованы")
       return
     }
 
     setIsSaving(true)
     try {
+      // Translate title and description to all languages
+      const [translatedTitle, translatedDescription] = await Promise.all([
+        translateText(data.title, [...LANGUAGES]),
+        translateText(data.description, [...LANGUAGES]),
+      ])
+
       const { db } = getFirebaseServices()
       const articleData = {
-        ...data,
+        title: translatedTitle,
+        description: translatedDescription,
+        coverImage: data.coverImage,
         authorId: user.id,
         likes: 0,
         views: 0,
@@ -98,16 +147,16 @@ export function ArticleForm({ articleId }: ArticleFormProps) {
       }
 
       if (articleId) {
-        await updateDoc(doc(db, "articles", articleId), articleData)
+        await updateDoc(doc(db!, "articles", articleId), articleData)
       } else {
-        const newDocRef = doc(collection(db, "articles"))
+        const newDocRef = doc(collection(db!, "articles"))
         await setDoc(newDocRef, articleData)
       }
 
       router.push("/admin/articles")
     } catch (error) {
       console.error("Error saving article:", error)
-      alert("Failed to save article")
+      alert("Не удалось сохранить статью")
     } finally {
       setIsSaving(false)
     }
@@ -125,46 +174,36 @@ export function ArticleForm({ articleId }: ArticleFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Title Section */}
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900">Title (7 Languages)</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {LANGUAGES.map((lang) => (
-            <div key={lang}>
-              <label className="block text-sm font-medium text-slate-700 mb-2 uppercase">{lang}</label>
-              <input
-                {...register(`title.${lang as keyof MultiLangText}`)}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
-                placeholder={`Title in ${lang}`}
-              />
-              {errors.title?.[lang as keyof MultiLangText] && <p className="text-red-500 text-xs mt-1">Required</p>}
-            </div>
-          ))}
+        <h2 className="text-lg font-semibold text-slate-900">Название</h2>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Название статьи</label>
+          <input
+            {...register("title")}
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+            placeholder="Введите название статьи (будет автоматически переведено на все языки)"
+          />
+          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
         </div>
       </div>
 
       {/* Description Section */}
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900">Description (7 Languages)</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {LANGUAGES.map((lang) => (
-            <div key={lang}>
-              <label className="block text-sm font-medium text-slate-700 mb-2 uppercase">{lang}</label>
-              <textarea
-                {...register(`description.${lang as keyof MultiLangText}`)}
-                rows={6}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
-                placeholder={`Description in ${lang}`}
-              />
-              {errors.description?.[lang as keyof MultiLangText] && (
-                <p className="text-red-500 text-xs mt-1">Required</p>
-              )}
-            </div>
-          ))}
+        <h2 className="text-lg font-semibold text-slate-900">Описание</h2>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Описание статьи</label>
+          <textarea
+            {...register("description")}
+            rows={8}
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+            placeholder="Введите описание статьи (будет автоматически переведено на все языки)"
+          />
+          {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
         </div>
       </div>
 
       {/* Cover Image */}
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900">Cover Image</h2>
+        <h2 className="text-lg font-semibold text-slate-900">Обложка</h2>
         <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center">
           <input
             type="file"
@@ -175,7 +214,7 @@ export function ArticleForm({ articleId }: ArticleFormProps) {
             id="cover-input"
           />
           <label htmlFor="cover-input" className="cursor-pointer flex flex-col items-center gap-2">
-            <div className="text-slate-600">{uploadingImage ? "Uploading..." : "Click to upload cover image"}</div>
+            <div className="text-slate-600">{uploadingImage ? "Загрузка..." : "Нажмите, чтобы загрузить обложку"}</div>
           </label>
         </div>
 
@@ -193,14 +232,14 @@ export function ArticleForm({ articleId }: ArticleFormProps) {
           disabled={isSaving}
           className="flex-1 bg-accent text-white py-3 rounded-lg hover:bg-orange-600 transition disabled:opacity-50"
         >
-          {isSaving ? "Saving..." : articleId ? "Update Article" : "Create Article"}
+          {isSaving ? "Сохранение..." : articleId ? "Обновить статью" : "Создать статью"}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
           className="flex-1 bg-slate-200 text-slate-900 py-3 rounded-lg hover:bg-slate-300 transition"
         >
-          Cancel
+          Отмена
         </button>
       </div>
     </form>
