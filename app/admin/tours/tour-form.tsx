@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { tourSchema, type TourFormData } from "@/schemas/tour-schema"
 import { getFirebaseServices } from "@/lib/firebase"
@@ -29,6 +29,8 @@ export function TourForm({ tourId }: TourFormProps) {
     handleSubmit,
     watch,
     reset,
+    getValues,
+    setValue,
     formState: { errors, isValid, isSubmitting },
   } = useForm<TourFormData>({
     resolver: zodResolver(tourSchema),
@@ -36,8 +38,12 @@ export function TourForm({ tourId }: TourFormProps) {
 
   const images = watch("images") || []
   const itinerary = watch("itinerary") || []
-  const dates = watch("dates") || []
   const inclusions = watch("inclusions") || { included: [], notIncluded: [] }
+
+  const { fields: dateFields, append: appendDate, remove: removeDate } = useFieldArray({
+    control,
+    name: "dates",
+  })
 
   useEffect(() => {
     if (tourId) {
@@ -119,9 +125,9 @@ export function TourForm({ tourId }: TourFormProps) {
         uploadedUrls.push(url)
       }
 
-      const currentImages = watch("images") || []
+      const currentImages = getValues("images") || []
       reset({
-        ...watch(),
+        ...getValues(),
         images: [...currentImages, ...uploadedUrls],
       })
     } catch (error: any) {
@@ -314,9 +320,10 @@ export function TourForm({ tourId }: TourFormProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    const newImages = images.filter((_, i) => i !== idx)
+                    const currentImages = getValues("images") || []
+                    const newImages = currentImages.filter((_, i) => i !== idx)
                     reset({
-                      ...watch(),
+                      ...getValues(),
                       images: newImages,
                     })
                   }}
@@ -340,9 +347,10 @@ export function TourForm({ tourId }: TourFormProps) {
               <button
                 type="button"
                 onClick={() => {
-                  const newItinerary = itinerary.filter((_, i) => i !== idx)
+                  const currentItinerary = getValues("itinerary") || []
+                  const newItinerary = currentItinerary.filter((_, i) => i !== idx)
                   reset({
-                    ...watch(),
+                    ...getValues(),
                     itinerary: newItinerary,
                   })
                 }}
@@ -373,9 +381,10 @@ export function TourForm({ tourId }: TourFormProps) {
         <button
           type="button"
           onClick={() => {
+            const currentItinerary = getValues("itinerary") || []
             reset({
-              ...watch(),
-              itinerary: [...itinerary, { title: "", description: "" }],
+              ...getValues(),
+              itinerary: [...currentItinerary, { title: "", description: "" }],
             })
           }}
           className="flex items-center gap-2 text-accent hover:text-orange-600"
@@ -388,19 +397,13 @@ export function TourForm({ tourId }: TourFormProps) {
       {/* Dates */}
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
         <h2 className="text-lg font-semibold text-slate-900">Даты туров</h2>
-        {dates.map((date, idx) => (
-          <div key={idx} className="border border-slate-200 rounded-lg p-4 space-y-3">
+        {dateFields.map((field, idx) => (
+          <div key={field.id} className="border border-slate-200 rounded-lg p-4 space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-slate-900">Дата {idx + 1}</h3>
               <button
                 type="button"
-                onClick={() => {
-                  const newDates = dates.filter((_, i) => i !== idx)
-                  reset({
-                    ...watch(),
-                    dates: newDates,
-                  })
-                }}
+                onClick={() => removeDate(idx)}
                 className="text-red-600 hover:text-red-700"
               >
                 <Trash2 className="w-4 h-4" />
@@ -451,10 +454,7 @@ export function TourForm({ tourId }: TourFormProps) {
         <button
           type="button"
           onClick={() => {
-            reset({
-              ...watch(),
-              dates: [...dates, { startDate: new Date(), endDate: new Date(), status: "Available" as const, price: "" }],
-            })
+            appendDate({ startDate: new Date(), endDate: new Date(), status: "Available" as const, price: "" })
           }}
           className="flex items-center gap-2 text-accent hover:text-orange-600"
         >
@@ -480,10 +480,11 @@ export function TourForm({ tourId }: TourFormProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      const newIncluded = inclusions.included?.filter((_, i) => i !== idx) || []
+                      const currentInclusions = getValues("inclusions") || { included: [], notIncluded: [] }
+                      const newIncluded = currentInclusions.included?.filter((_, i) => i !== idx) || []
                       reset({
-                        ...watch(),
-                        inclusions: { ...inclusions, included: newIncluded },
+                        ...getValues(),
+                        inclusions: { ...currentInclusions, included: newIncluded },
                       })
                     }}
                     className="text-red-600 hover:text-red-700"
@@ -495,9 +496,10 @@ export function TourForm({ tourId }: TourFormProps) {
               <button
                 type="button"
                 onClick={() => {
+                  const currentInclusions = getValues("inclusions") || { included: [], notIncluded: [] }
                   reset({
-                    ...watch(),
-                    inclusions: { ...inclusions, included: [...(inclusions.included || []), ""] },
+                    ...getValues(),
+                    inclusions: { ...currentInclusions, included: [...(currentInclusions.included || []), ""] },
                   })
                 }}
                 className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
@@ -520,10 +522,11 @@ export function TourForm({ tourId }: TourFormProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      const newNotIncluded = inclusions.notIncluded?.filter((_, i) => i !== idx) || []
+                      const currentInclusions = getValues("inclusions") || { included: [], notIncluded: [] }
+                      const newNotIncluded = currentInclusions.notIncluded?.filter((_, i) => i !== idx) || []
                       reset({
-                        ...watch(),
-                        inclusions: { ...inclusions, notIncluded: newNotIncluded },
+                        ...getValues(),
+                        inclusions: { ...currentInclusions, notIncluded: newNotIncluded },
                       })
                     }}
                     className="text-red-600 hover:text-red-700"
@@ -535,9 +538,10 @@ export function TourForm({ tourId }: TourFormProps) {
               <button
                 type="button"
                 onClick={() => {
+                  const currentInclusions = getValues("inclusions") || { included: [], notIncluded: [] }
                   reset({
-                    ...watch(),
-                    inclusions: { ...inclusions, notIncluded: [...(inclusions.notIncluded || []), ""] },
+                    ...getValues(),
+                    inclusions: { ...currentInclusions, notIncluded: [...(currentInclusions.notIncluded || []), ""] },
                   })
                 }}
                 className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
