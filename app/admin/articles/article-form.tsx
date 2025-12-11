@@ -142,8 +142,8 @@ export function ArticleForm({ articleId }: ArticleFormProps) {
         authorId: user.id,
         likes: 0,
         views: 0,
-        createdAt: articleId ? undefined : serverTimestamp(),
         updatedAt: serverTimestamp(),
+        ...(articleId ? {} : { createdAt: serverTimestamp() }),
       }
 
       if (articleId) {

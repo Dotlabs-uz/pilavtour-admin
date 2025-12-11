@@ -8,7 +8,7 @@ const LANGUAGE_CODES: Record<Language, string> = {
   sp: "es", // Spanish
   uk: "uk",
   it: "it",
-  ge: "ka", // Georgian
+  de: "de", // German
 }
 
 export async function POST(req: NextRequest) {

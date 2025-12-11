@@ -15,6 +15,12 @@ import { Trash2, Plus, Calendar } from "lucide-react"
 import { onAuthStateChanged } from "firebase/auth"
 import { translateText } from "@/lib/translation"
 
+const toDateInputValue = (value?: Date | string | null) => {
+  if (!value) return ""
+  const date = value instanceof Date ? value : new Date(value)
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10)
+}
+
 interface TourFormProps {
   tourId?: string
 }
@@ -59,6 +65,14 @@ export function TourForm({ tourId }: TourFormProps) {
       if (tourDoc.exists()) {
         const data = tourDoc.data()
         // Load with Russian title/description as default (or first available)
+        const normalizeDates =
+          data.dates?.map((d: any) => ({
+            startDate: toDateInputValue(d?.startDate?.toDate ? d.startDate.toDate() : d?.startDate),
+            endDate: toDateInputValue(d?.endDate?.toDate ? d.endDate.toDate() : d?.endDate),
+            status: d?.status || "Available",
+            price: d?.price || "",
+          })) || []
+
         reset({
           title: data.title?.ru || data.title?.en || data.title?.uz || "",
           description: data.description?.ru || data.description?.en || data.description?.uz || "",
@@ -68,7 +82,7 @@ export function TourForm({ tourId }: TourFormProps) {
           maxGroupCount: data.maxGroupCount || undefined,
           images: data.images || [],
           itinerary: data.itinerary || [],
-          dates: data.dates || [],
+          dates: normalizeDates,
           inclusions: data.inclusions || { included: [], notIncluded: [] },
           location: data.location || "",
         })
@@ -160,8 +174,8 @@ export function TourForm({ tourId }: TourFormProps) {
         dates: data.dates || [],
         inclusions: data.inclusions || { included: [], notIncluded: [] },
         location: data.location,
-        createdAt: tourId ? undefined : serverTimestamp(),
         updatedAt: serverTimestamp(),
+        ...(tourId ? {} : { createdAt: serverTimestamp() }),
       }
 
       if (tourId) {
@@ -454,7 +468,12 @@ export function TourForm({ tourId }: TourFormProps) {
         <button
           type="button"
           onClick={() => {
-            appendDate({ startDate: new Date(), endDate: new Date(), status: "Available" as const, price: "" })
+            appendDate({
+              startDate: toDateInputValue(new Date()),
+              endDate: toDateInputValue(new Date()),
+              status: "Available" as const,
+              price: "",
+            })
           }}
           className="flex items-center gap-2 text-accent hover:text-orange-600"
         >

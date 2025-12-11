@@ -1,4 +1,4 @@
-export const LANGUAGES = ["uz", "ru", "en", "sp", "uk", "it", "ge"] as const
+export const LANGUAGES = ["uz", "ru", "en", "sp", "uk", "it", "de"] as const
 export type Language = (typeof LANGUAGES)[number]
 
 export interface MultiLangText {
@@ -8,7 +8,7 @@ export interface MultiLangText {
   sp: string
   uk: string
   it: string
-  ge: string
+  de: string
 }
 
 export interface User {
