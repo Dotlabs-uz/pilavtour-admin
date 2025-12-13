@@ -1,4 +1,4 @@
-export const LANGUAGES = ["uz", "ru", "en", "sp", "uk", "it", "de"] as const
+export const LANGUAGES = ["uz", "ru", "en", "sp", "uk", "it", "ge"] as const
 export type Language = (typeof LANGUAGES)[number]
 
 export interface MultiLangText {
@@ -8,7 +8,7 @@ export interface MultiLangText {
   sp: string
   uk: string
   it: string
-  de: string
+  ge: string
 }
 
 export interface User {
@@ -36,8 +36,8 @@ export interface Tour {
   maxGroupCount?: number
   images: string[]
   itinerary: Array<{
-    title: string
-    description: string
+    title: MultiLangText
+    description: MultiLangText
   }>
   dates: Array<{
     startDate: Date
@@ -46,10 +46,10 @@ export interface Tour {
     price: string
   }>
   inclusions: {
-    included: string[]
-    notIncluded: string[]
+    included: MultiLangText[]
+    notIncluded: MultiLangText[]
   }
-  location: string
+  location: MultiLangText
 }
 
 export interface Article {
@@ -79,6 +79,22 @@ export interface Review {
 export interface Admin {
   id: string
   email: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface Booking {
+  id: string
+  userId: string
+  user?: User
+  tourId: string
+  tour?: Tour
+  status: "pending" | "confirmed" | "cancelled" | "completed"
+  numberOfPeople: number
+  totalPrice: string
+  bookingDate: Date
+  travelDate?: Date
+  notes?: string
   createdAt: Date
   updatedAt: Date
 }

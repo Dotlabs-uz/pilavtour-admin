@@ -6,13 +6,14 @@ import { useAuthStore } from "@/lib/auth-store"
 import { getFirebaseServices } from "@/lib/firebase"
 import { signOut } from "firebase/auth"
 import { useState } from "react"
-import { Users, MapPin, FileText, Star, X, Menu, LogOut } from "lucide-react"
+import { Users, MapPin, FileText, Star, X, Menu, LogOut, Calendar } from "lucide-react"
 
 const menuItems = [
   { href: "/admin/users", label: "Пользователи", icon: Users },
   { href: "/admin/tours", label: "Туры", icon: MapPin },
   { href: "/admin/articles", label: "Статьи", icon: FileText },
   { href: "/admin/reviews", label: "Отзывы", icon: Star },
+  { href: "/admin/bookings", label: "Бронирования", icon: Calendar },
 ]
 
 export function Sidebar() {

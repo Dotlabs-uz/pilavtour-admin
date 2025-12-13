@@ -26,8 +26,8 @@ export const tourSchema = z.object({
     }),
   ).optional(),
   inclusions: z.object({
-    included: z.array(z.string()),
-    notIncluded: z.array(z.string()),
+    included: z.array(z.string().min(1, "Пункт не может быть пустым")),
+    notIncluded: z.array(z.string().min(1, "Пункт не может быть пустым")),
   }).optional(),
   location: z.string(),
 })

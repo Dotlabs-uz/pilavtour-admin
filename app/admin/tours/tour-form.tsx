@@ -73,6 +73,23 @@ export function TourForm({ tourId }: TourFormProps) {
             price: d?.price || "",
           })) || []
 
+        // Normalize itinerary to use Russian (or first available) language
+        const normalizeItinerary =
+          data.itinerary?.map((item: any) => ({
+            title: item.title?.ru || item.title?.en || item.title?.uz || (typeof item.title === "string" ? item.title : ""),
+            description: item.description?.ru || item.description?.en || item.description?.uz || (typeof item.description === "string" ? item.description : ""),
+          })) || []
+
+        // Normalize inclusions to use Russian (or first available) language
+        const normalizeIncluded =
+          data.inclusions?.included?.map((item: any) =>
+            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
+          ) || []
+        const normalizeNotIncluded =
+          data.inclusions?.notIncluded?.map((item: any) =>
+            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
+          ) || []
+
         reset({
           title: data.title?.ru || data.title?.en || data.title?.uz || "",
           description: data.description?.ru || data.description?.en || data.description?.uz || "",
@@ -81,10 +98,10 @@ export function TourForm({ tourId }: TourFormProps) {
           duration: data.duration || { days: 1, nights: 0 },
           maxGroupCount: data.maxGroupCount || undefined,
           images: data.images || [],
-          itinerary: data.itinerary || [],
+          itinerary: normalizeItinerary,
           dates: normalizeDates,
-          inclusions: data.inclusions || { included: [], notIncluded: [] },
-          location: data.location || "",
+          inclusions: { included: normalizeIncluded, notIncluded: normalizeNotIncluded },
+          location: typeof data.location === "string" ? data.location : data.location?.ru || data.location?.en || data.location?.uz || "",
         })
       }
     } catch (error) {
@@ -161,6 +178,31 @@ export function TourForm({ tourId }: TourFormProps) {
         translateText(data.description, [...LANGUAGES]),
       ])
 
+      // Translate itinerary items
+      const translatedItinerary = await Promise.all(
+        (data.itinerary || []).map(async (item) => {
+          const [translatedTitle, translatedDescription] = await Promise.all([
+            translateText(item.title, [...LANGUAGES]),
+            translateText(item.description, [...LANGUAGES]),
+          ])
+          return {
+            title: translatedTitle,
+            description: translatedDescription,
+          }
+        })
+      )
+
+      // Translate inclusions
+      const translatedIncluded = await Promise.all(
+        (data.inclusions?.included || []).map((item) => translateText(item, [...LANGUAGES]))
+      )
+      const translatedNotIncluded = await Promise.all(
+        (data.inclusions?.notIncluded || []).map((item) => translateText(item, [...LANGUAGES]))
+      )
+
+      // Translate location
+      const translatedLocation = await translateText(data.location, [...LANGUAGES])
+
       const { db } = getFirebaseServices()
       const tourData = {
         title: translatedTitle,
@@ -170,10 +212,13 @@ export function TourForm({ tourId }: TourFormProps) {
         duration: data.duration,
         maxGroupCount: data.maxGroupCount,
         images: data.images,
-        itinerary: data.itinerary || [],
+        itinerary: translatedItinerary,
         dates: data.dates || [],
-        inclusions: data.inclusions || { included: [], notIncluded: [] },
-        location: data.location,
+        inclusions: {
+          included: translatedIncluded,
+          notIncluded: translatedNotIncluded,
+        },
+        location: translatedLocation,
         updatedAt: serverTimestamp(),
         ...(tourId ? {} : { createdAt: serverTimestamp() }),
       }
@@ -298,7 +343,7 @@ export function TourForm({ tourId }: TourFormProps) {
               {...register("location")}
               type="text"
               className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-              placeholder="e.g., Samarkand, Bukhara"
+              placeholder="e.g., Samarkand, Bukhara (будет автоматически переведено на все языки)"
             />
           </div>
         </div>
@@ -378,7 +423,7 @@ export function TourForm({ tourId }: TourFormProps) {
               <input
                 {...register(`itinerary.${idx}.title`)}
                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
-                placeholder="Название дня"
+                placeholder="Название дня (будет автоматически переведено на все языки)"
               />
             </div>
             <div>
@@ -387,7 +432,7 @@ export function TourForm({ tourId }: TourFormProps) {
                 {...register(`itinerary.${idx}.description`)}
                 rows={3}
                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
-                placeholder="Описание дня"
+                placeholder="Описание дня (будет автоматически переведено на все языки)"
               />
             </div>
           </div>
@@ -469,8 +514,8 @@ export function TourForm({ tourId }: TourFormProps) {
           type="button"
           onClick={() => {
             appendDate({
-              startDate: toDateInputValue(new Date()),
-              endDate: toDateInputValue(new Date()),
+              startDate: new Date(),
+              endDate: new Date(),
               status: "Available" as const,
               price: "",
             })
@@ -494,7 +539,7 @@ export function TourForm({ tourId }: TourFormProps) {
                   <input
                     {...register(`inclusions.included.${idx}`)}
                     className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
-                    placeholder="Включенный пункт"
+                    placeholder="Включенный пункт (будет автоматически переведено на все языки)"
                   />
                   <button
                     type="button"
@@ -536,7 +581,7 @@ export function TourForm({ tourId }: TourFormProps) {
                   <input
                     {...register(`inclusions.notIncluded.${idx}`)}
                     className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
-                    placeholder="Не включенный пункт"
+                    placeholder="Не включенный пункт (будет автоматически переведено на все языки)"
                   />
                   <button
                     type="button"
