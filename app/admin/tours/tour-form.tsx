@@ -67,8 +67,8 @@ export function TourForm({ tourId }: TourFormProps) {
         // Load with Russian title/description as default (or first available)
         const normalizeDates =
           data.dates?.map((d: any) => ({
-            startDate: toDateInputValue(d?.startDate?.toDate ? d.startDate.toDate() : d?.startDate),
-            endDate: toDateInputValue(d?.endDate?.toDate ? d.endDate.toDate() : d?.endDate),
+            startDate: toDateInputValue(d?.startDate?.toDate ? d.startDate.toDate() : d?.startDate) || "",
+            endDate: toDateInputValue(d?.endDate?.toDate ? d.endDate.toDate() : d?.endDate) || "",
             status: d?.status || "Available",
             price: d?.price || "",
           })) || []
@@ -170,20 +170,34 @@ export function TourForm({ tourId }: TourFormProps) {
     }
   }
 
+  const getEmptyMultiLang = (): MultiLangText => {
+    return {
+      uz: "",
+      ru: "",
+      en: "",
+      sp: "",
+      uk: "",
+      it: "",
+      ge: "",
+    }
+  }
+
   const onSubmit = async (data: TourFormData) => {
     try {
-      // Translate title and description to all languages
+      const emptyMultiLang = getEmptyMultiLang()
+      
+      // Translate title and description to all languages (only if provided)
       const [translatedTitle, translatedDescription] = await Promise.all([
-        translateText(data.title, [...LANGUAGES]),
-        translateText(data.description, [...LANGUAGES]),
+        data.title ? translateText(data.title, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
+        data.description ? translateText(data.description, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
       ])
 
       // Translate itinerary items
       const translatedItinerary = await Promise.all(
         (data.itinerary || []).map(async (item) => {
           const [translatedTitle, translatedDescription] = await Promise.all([
-            translateText(item.title, [...LANGUAGES]),
-            translateText(item.description, [...LANGUAGES]),
+            item.title ? translateText(item.title, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
+            item.description ? translateText(item.description, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
           ])
           return {
             title: translatedTitle,
@@ -194,30 +208,48 @@ export function TourForm({ tourId }: TourFormProps) {
 
       // Translate inclusions
       const translatedIncluded = await Promise.all(
-        (data.inclusions?.included || []).map((item) => translateText(item, [...LANGUAGES]))
+        (data.inclusions?.included || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
       )
       const translatedNotIncluded = await Promise.all(
-        (data.inclusions?.notIncluded || []).map((item) => translateText(item, [...LANGUAGES]))
+        (data.inclusions?.notIncluded || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
       )
 
       // Translate location
-      const translatedLocation = await translateText(data.location, [...LANGUAGES])
+      const translatedLocation = data.location ? await translateText(data.location, [...LANGUAGES]) : undefined
+
+      // Convert date strings to Date objects for Firestore
+      const normalizedDates = (data.dates || [])
+        .map((date) => {
+          const startDate = date.startDate 
+            ? (typeof date.startDate === "string" && date.startDate ? new Date(date.startDate) : date.startDate instanceof Date ? date.startDate : null)
+            : null
+          const endDate = date.endDate 
+            ? (typeof date.endDate === "string" && date.endDate ? new Date(date.endDate) : date.endDate instanceof Date ? date.endDate : null)
+            : null
+          return {
+            startDate,
+            endDate,
+            status: date.status || "Available",
+            price: date.price || "",
+          }
+        })
+        .filter((date) => date.startDate && date.endDate && !isNaN(date.startDate.getTime()) && !isNaN(date.endDate.getTime())) // Only include valid dates with both start and end
 
       const { db } = getFirebaseServices()
       const tourData = {
         title: translatedTitle,
         description: translatedDescription,
-        price: data.price,
-        style: data.style,
-        duration: data.duration,
+        price: data.price || "",
+        style: data.style || "Standart",
+        duration: data.duration || { days: 1, nights: 0 },
         maxGroupCount: data.maxGroupCount,
-        images: data.images,
+        images: data.images || [],
         itinerary: translatedItinerary,
-        dates: data.dates || [],
-        inclusions: {
+        dates: normalizedDates.length > 0 ? normalizedDates : undefined,
+        inclusions: data.inclusions ? {
           included: translatedIncluded,
           notIncluded: translatedNotIncluded,
-        },
+        } : undefined,
         location: translatedLocation,
         updatedAt: serverTimestamp(),
         ...(tourId ? {} : { createdAt: serverTimestamp() }),
@@ -472,7 +504,7 @@ export function TourForm({ tourId }: TourFormProps) {
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Дата начала</label>
                 <input
-                  {...register(`dates.${idx}.startDate`, { valueAsDate: true })}
+                  {...register(`dates.${idx}.startDate`)}
                   type="date"
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
                 />
@@ -480,7 +512,7 @@ export function TourForm({ tourId }: TourFormProps) {
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Дата окончания</label>
                 <input
-                  {...register(`dates.${idx}.endDate`, { valueAsDate: true })}
+                  {...register(`dates.${idx}.endDate`)}
                   type="date"
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
                 />
@@ -514,8 +546,8 @@ export function TourForm({ tourId }: TourFormProps) {
           type="button"
           onClick={() => {
             appendDate({
-              startDate: new Date(),
-              endDate: new Date(),
+              startDate: "",
+              endDate: "",
               status: "Available" as const,
               price: "",
             })

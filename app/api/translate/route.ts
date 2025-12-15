@@ -13,10 +13,43 @@ const LANGUAGE_CODES: Record<Language, string> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { text, targetLanguages } = await req.json()
+    const { text, targetLanguages, detectLanguage } = await req.json()
 
     if (!text || !targetLanguages) {
       return NextResponse.json({ error: "Text and target languages are required" }, { status: 400 })
+    }
+
+    const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_TRANSLATE_API_KEY
+    if (!apiKey) {
+      return NextResponse.json({ error: "Google Translate API key not configured" }, { status: 500 })
+    }
+
+    let sourceLanguage: string | undefined = undefined
+
+    // Detect language if requested
+    if (detectLanguage) {
+      try {
+        const detectResponse = await fetch(
+          `https://translation.googleapis.com/language/translate/v2/detect?key=${apiKey}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              q: text,
+            }),
+          },
+        )
+
+        if (detectResponse.ok) {
+          const detectResult = await detectResponse.json()
+          sourceLanguage = detectResult.data.detections[0][0].language
+        }
+      } catch (error) {
+        console.error("Language detection error:", error)
+        // Continue without source language - Google will auto-detect
+      }
     }
 
     const translations: Record<Language, string> = {} as Record<Language, string>
@@ -25,17 +58,24 @@ export async function POST(req: NextRequest) {
     const translationPromises = targetLanguages.map(async (lang: Language): Promise<{ lang: Language; text: string }> => {
       try {
         const targetCode = LANGUAGE_CODES[lang]
+        const requestBody: any = {
+          q: text,
+          target: targetCode,
+        }
+        
+        // Add source language if detected
+        if (sourceLanguage) {
+          requestBody.source = sourceLanguage
+        }
+
         const response = await fetch(
-          `https://translation.googleapis.com/language/translate/v2?key=${process.env.GOOGLE_TRANSLATE_API_KEY}`,
+          `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-              q: text,
-              target: targetCode,
-            }),
+            body: JSON.stringify(requestBody),
           },
         )
 

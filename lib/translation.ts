@@ -1,6 +1,11 @@
 import type { MultiLangText, Language } from "@/types"
+import { detectAndTranslate } from "./language-detection"
 
-export async function translateText(text: string, targetLanguages: Language[]): Promise<MultiLangText> {
+export async function translateText(text: string, targetLanguages: Language[], detectLanguage: boolean = true): Promise<MultiLangText> {
+  if (!text || text.trim().length === 0) {
+    return Object.fromEntries(targetLanguages.map((lang) => [lang, ""])) as MultiLangText
+  }
+
   try {
     const response = await fetch("/api/translate", {
       method: "POST",
@@ -10,6 +15,7 @@ export async function translateText(text: string, targetLanguages: Language[]): 
       body: JSON.stringify({
         text,
         targetLanguages,
+        detectLanguage,
       }),
     })
 
