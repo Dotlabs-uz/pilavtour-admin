@@ -8,8 +8,8 @@ const dateStringToDate = z.string().transform((str) => {
 })
 
 export const tourSchema = z.object({
-  title: z.string().max(200, "Максимум 200 символов").optional().or(z.literal("")),
-  description: z.string().max(5000, "Максимум 5000 символов").optional().or(z.literal("")),
+  title: z.string().optional().or(z.literal("")),
+  description: z.string().optional().or(z.literal("")),
   price: z.string().optional().or(z.literal("")),
   style: z.enum(["Premium", "Econom", "Standart", "Lux"]).optional(),
   duration: z.object({
@@ -20,8 +20,8 @@ export const tourSchema = z.object({
   images: z.array(z.string()).optional(),
   itinerary: z.array(
     z.object({
-      title: z.string().max(100, "Максимум 100 символов").optional().or(z.literal("")),
-      description: z.string().max(500, "Максимум 500 символов").optional().or(z.literal("")),
+      title: z.string().optional().or(z.literal("")),
+      description: z.string().optional().or(z.literal("")),
     }),
   ).optional(),
   dates: z.array(

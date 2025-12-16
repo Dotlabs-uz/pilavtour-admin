@@ -1,8 +1,8 @@
 import { z } from "zod"
 
 export const articleSchema = z.object({
-  title: z.string().min(1, "Название обязательно"),
-  description: z.string().min(1, "Описание обязательно"),
+  title: z.string(),
+  description: z.string(),
   coverImage: z.string().optional(),
 })
 
