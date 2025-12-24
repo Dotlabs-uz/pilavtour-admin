@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation"
 import { Trash2, Plus, Calendar } from "lucide-react"
 import { onAuthStateChanged } from "firebase/auth"
 import { translateText } from "@/lib/translation"
+import { Slider } from "@/components/ui/slider"
 
 const toDateInputValue = (value?: Date | string | null) => {
   if (!value) return ""
@@ -40,11 +41,15 @@ export function TourForm({ tourId }: TourFormProps) {
     formState: { errors, isValid, isSubmitting },
   } = useForm<TourFormData>({
     resolver: zodResolver(tourSchema),
+    defaultValues: {
+      physicalRating: 5,
+    },
   })
 
   const images = watch("images") || []
   const itinerary = watch("itinerary") || []
   const inclusions = watch("inclusions") || { included: [], notIncluded: [] }
+  const physicalRating = watch("physicalRating") ?? 5
 
   const { fields: dateFields, append: appendDate, remove: removeDate } = useFieldArray({
     control,
@@ -91,12 +96,17 @@ export function TourForm({ tourId }: TourFormProps) {
           ) || []
 
         reset({
+          name: data.name?.ru || data.name?.en || data.name?.uz || "",
           title: data.title?.ru || data.title?.en || data.title?.uz || "",
           description: data.description?.ru || data.description?.en || data.description?.uz || "",
           price: data.price || "",
           style: data.style || "Standart",
           duration: data.duration || { days: 1, nights: 0 },
-          maxGroupCount: data.maxGroupCount || undefined,
+          groupSize: typeof data.groupSize === "string" ? data.groupSize : data.groupSize?.ru || data.groupSize?.en || data.groupSize?.uz || "",
+          start: data.start || "",
+          end: data.end || "",
+          theme: typeof data.theme === "string" ? data.theme : data.theme?.ru || data.theme?.en || data.theme?.uz || "",
+          physicalRating: data.physicalRating || undefined,
           images: data.images || [],
           itinerary: normalizeItinerary,
           dates: normalizeDates,
@@ -186,8 +196,9 @@ export function TourForm({ tourId }: TourFormProps) {
     try {
       const emptyMultiLang = getEmptyMultiLang()
       
-      // Translate title and description to all languages (only if provided)
-      const [translatedTitle, translatedDescription] = await Promise.all([
+      // Translate name, title and description to all languages (only if provided)
+      const [translatedName, translatedTitle, translatedDescription] = await Promise.all([
+        data.name ? translateText(data.name, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
         data.title ? translateText(data.title, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
         data.description ? translateText(data.description, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
       ])
@@ -214,8 +225,10 @@ export function TourForm({ tourId }: TourFormProps) {
         (data.inclusions?.notIncluded || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
       )
 
-      // Translate location
+      // Translate location, theme and groupSize
       const translatedLocation = data.location ? await translateText(data.location, [...LANGUAGES]) : undefined
+      const translatedTheme = data.theme ? await translateText(data.theme, [...LANGUAGES]) : undefined
+      const translatedGroupSize = data.groupSize ? await translateText(data.groupSize, [...LANGUAGES]) : undefined
 
       // Convert date strings to Date objects for Firestore
       const normalizedDates = (data.dates || [])
@@ -237,12 +250,17 @@ export function TourForm({ tourId }: TourFormProps) {
 
       const { db } = getFirebaseServices()
       const tourData = {
+        name: translatedName,
         title: translatedTitle,
         description: translatedDescription,
         price: data.price || "",
         style: data.style || "Standart",
         duration: data.duration || { days: 1, nights: 0 },
-        maxGroupCount: data.maxGroupCount,
+        groupSize: translatedGroupSize,
+        start: data.start || "",
+        end: data.end || "",
+        theme: translatedTheme,
+        physicalRating: data.physicalRating,
         images: data.images || [],
         itinerary: translatedItinerary,
         dates: normalizedDates.length > 0 ? normalizedDates : undefined,
@@ -283,12 +301,20 @@ export function TourForm({ tourId }: TourFormProps) {
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
         <h2 className="text-lg font-semibold text-slate-900">Название</h2>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Название тура</label>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Название</label>
+          <input
+            {...register("name")}
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+            placeholder="Введите название (будет автоматически переведено на все языки)"
+          />
+          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Заголовок</label>
           <input
             {...register("title")}
-            maxLength={200}
             className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
-            placeholder="Введите название тура (будет автоматически переведено на все языки)"
+            placeholder="Введите заголовок (будет автоматически переведено на все языки)"
           />
           {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
         </div>
@@ -360,12 +386,12 @@ export function TourForm({ tourId }: TourFormProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Максимальное количество группы (необязательно)</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Размер группы</label>
             <input
-              {...register("maxGroupCount", { valueAsNumber: true })}
-              type="number"
-              min="1"
+              {...register("groupSize")}
+              type="text"
               className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+              placeholder="Введите размер группы (будет автоматически переведено на все языки)"
             />
           </div>
 
@@ -377,6 +403,70 @@ export function TourForm({ tourId }: TourFormProps) {
               className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
               placeholder="e.g., Samarkand, Bukhara (будет автоматически переведено на все языки)"
             />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Начало</label>
+            <input
+              {...register("start")}
+              type="text"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+              placeholder="Введите начало"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Конец</label>
+            <input
+              {...register("end")}
+              type="text"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+              placeholder="Введите конец"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Тема</label>
+            <select
+              {...register("theme")}
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+            >
+              <option value="">Выберите тему</option>
+              <option value="8 to 35s">8 to 35s</option>
+              <option value="Multi-active">Multi-active</option>
+              <option value="Camping">Camping</option>
+              <option value="Explorer">Explorer</option>
+              <option value="Family">Family</option>
+              <option value="Festivals">Festivals</option>
+              <option value="Food">Food</option>
+              <option value="Women's Expeditions">Women's Expeditions</option>
+              <option value="Religious Tours">Religious Tours</option>
+            </select>
+            {errors.theme && <p className="text-red-500 text-xs mt-1">{errors.theme.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Физическая оценка (1-5): {physicalRating}</label>
+            <Slider
+              value={[physicalRating]}
+              onValueChange={(values) => setValue("physicalRating", values[0], { shouldValidate: true })}
+              min={1}
+              max={5}
+              step={1}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-slate-500 mt-1">
+              <span>1</span>
+              <span>2</span>
+              <span>3</span>
+              <span>4</span>
+              <span>5</span>
+            </div>
+            {errors.physicalRating && <p className="text-red-500 text-xs mt-1">{errors.physicalRating.message}</p>}
           </div>
         </div>
       </div>

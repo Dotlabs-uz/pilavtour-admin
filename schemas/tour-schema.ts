@@ -8,6 +8,7 @@ const dateStringToDate = z.string().transform((str) => {
 })
 
 export const tourSchema = z.object({
+  name: z.string().optional().or(z.literal("")),
   title: z.string().optional().or(z.literal("")),
   description: z.string().optional().or(z.literal("")),
   price: z.string().optional().or(z.literal("")),
@@ -16,7 +17,11 @@ export const tourSchema = z.object({
     days: z.number().positive().optional(),
     nights: z.number().positive().optional(),
   }).optional(),
-  maxGroupCount: z.number().positive().optional(),
+  groupSize: z.string().optional().or(z.literal("")),
+  start: z.string().optional().or(z.literal("")),
+  end: z.string().optional().or(z.literal("")),
+  theme: z.enum(["8 to 35s", "Multi-active", "Camping", "Explorer", "Family", "Festivals", "Food", "Women's Expeditions", "Religious Tours"]).optional(),
+  physicalRating: z.number().min(1).max(5).optional(),
   images: z.array(z.string()).optional(),
   itinerary: z.array(
     z.object({
