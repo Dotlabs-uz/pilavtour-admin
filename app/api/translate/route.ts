@@ -11,6 +11,24 @@ const LANGUAGE_CODES: Record<Language, string> = {
   ge: "de", // German (internal key: ge, Google Translate API code: de)
 }
 
+// Server-side HTML entity decoder (for API route)
+// Decodes common HTML entities returned by Google Translate API
+function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#x27;/g, "'")
+    .replace(/&#x2F;/g, "/")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#8217;/g, "'") // Right single quotation mark
+    .replace(/&#8216;/g, "'") // Left single quotation mark
+    .replace(/&#8220;/g, '"') // Left double quotation mark
+    .replace(/&#8221;/g, '"') // Right double quotation mark
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { text, targetLanguages, detectLanguage } = await req.json()
@@ -85,9 +103,12 @@ export async function POST(req: NextRequest) {
         }
 
         const result = await response.json()
+        const translatedText = result.data.translations[0].translatedText
+        // Decode HTML entities (e.g., &#39; -> ')
+        const decodedText = decodeHtmlEntities(translatedText)
         return {
           lang,
-          text: result.data.translations[0].translatedText,
+          text: decodedText,
         } as { lang: Language; text: string }
       } catch (error) {
         console.error(`Error translating to ${lang}:`, error)

@@ -35,9 +35,15 @@ export interface Tour {
   }
   maxGroupCount?: number
   images: string[]
+  itineraryImage?: string
   itinerary: Array<{
     title: MultiLangText
     description: MultiLangText
+    accommodation?: MultiLangText[]
+    meals?: MultiLangText[]
+    includedActivities?: MultiLangText[]
+    optionalActivities?: MultiLangText[]
+    specialInformation?: MultiLangText
   }>
   dates: Array<{
     startDate: Date

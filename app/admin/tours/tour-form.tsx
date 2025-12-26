@@ -15,6 +15,7 @@ import { Trash2, Plus, Calendar } from "lucide-react"
 import { onAuthStateChanged } from "firebase/auth"
 import { translateText } from "@/lib/translation"
 import { Slider } from "@/components/ui/slider"
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 
 const toDateInputValue = (value?: Date | string | null) => {
   if (!value) return ""
@@ -48,6 +49,7 @@ export function TourForm({ tourId }: TourFormProps) {
 
   const images = watch("images") || []
   const itinerary = watch("itinerary") || []
+  const itineraryImage = watch("itineraryImage") || ""
   const inclusions = watch("inclusions") || { included: [], notIncluded: [] }
   const physicalRating = watch("physicalRating") ?? 5
 
@@ -83,6 +85,11 @@ export function TourForm({ tourId }: TourFormProps) {
           data.itinerary?.map((item: any) => ({
             title: item.title?.ru || item.title?.en || item.title?.uz || (typeof item.title === "string" ? item.title : ""),
             description: item.description?.ru || item.description?.en || item.description?.uz || (typeof item.description === "string" ? item.description : ""),
+            accommodation: item.accommodation?.map((acc: any) => typeof acc === "string" ? acc : acc?.ru || acc?.en || acc?.uz || "") || [],
+            meals: item.meals?.map((meal: any) => typeof meal === "string" ? meal : meal?.ru || meal?.en || meal?.uz || "") || [],
+            includedActivities: item.includedActivities?.map((act: any) => typeof act === "string" ? act : act?.ru || act?.en || act?.uz || "") || [],
+            optionalActivities: item.optionalActivities?.map((act: any) => typeof act === "string" ? act : act?.ru || act?.en || act?.uz || "") || [],
+            specialInformation: item.specialInformation?.ru || item.specialInformation?.en || item.specialInformation?.uz || (typeof item.specialInformation === "string" ? item.specialInformation : ""),
           })) || []
 
         // Normalize inclusions to use Russian (or first available) language
@@ -108,6 +115,7 @@ export function TourForm({ tourId }: TourFormProps) {
           theme: typeof data.theme === "string" ? data.theme : data.theme?.ru || data.theme?.en || data.theme?.uz || "",
           physicalRating: data.physicalRating || undefined,
           images: data.images || [],
+          itineraryImage: data.itineraryImage || "",
           itinerary: normalizeItinerary,
           dates: normalizeDates,
           inclusions: { included: normalizeIncluded, notIncluded: normalizeNotIncluded },
@@ -206,13 +214,40 @@ export function TourForm({ tourId }: TourFormProps) {
       // Translate itinerary items
       const translatedItinerary = await Promise.all(
         (data.itinerary || []).map(async (item) => {
-          const [translatedTitle, translatedDescription] = await Promise.all([
+          const [translatedTitle, translatedDescription, translatedSpecialInfo] = await Promise.all([
             item.title ? translateText(item.title, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
             item.description ? translateText(item.description, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
+            item.specialInformation ? translateText(item.specialInformation, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
           ])
+          
+          // Translate accommodation array
+          const translatedAccommodation = await Promise.all(
+            (item.accommodation || []).map((acc: string | undefined) => acc ? translateText(acc, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
+          )
+          
+          // Translate meals array
+          const translatedMeals = await Promise.all(
+            (item.meals || []).map((meal: string | undefined) => meal ? translateText(meal, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
+          )
+          
+          // Translate included activities array
+          const translatedIncludedActivities = await Promise.all(
+            (item.includedActivities || []).map((act: string | undefined) => act ? translateText(act, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
+          )
+          
+          // Translate optional activities array
+          const translatedOptionalActivities = await Promise.all(
+            (item.optionalActivities || []).map((act: string | undefined) => act ? translateText(act, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
+          )
+          
           return {
             title: translatedTitle,
             description: translatedDescription,
+            accommodation: translatedAccommodation,
+            meals: translatedMeals,
+            includedActivities: translatedIncludedActivities,
+            optionalActivities: translatedOptionalActivities,
+            specialInformation: translatedSpecialInfo,
           }
         })
       )
@@ -262,6 +297,7 @@ export function TourForm({ tourId }: TourFormProps) {
         theme: translatedTheme,
         physicalRating: data.physicalRating,
         images: data.images || [],
+        itineraryImage: data.itineraryImage || "",
         itinerary: translatedItinerary,
         dates: normalizedDates.length > 0 ? normalizedDates : undefined,
         inclusions: data.inclusions ? {
@@ -520,59 +556,396 @@ export function TourForm({ tourId }: TourFormProps) {
 
       {/* Itinerary */}
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900">Маршрут</h2>
-        {itinerary.map((item, idx) => (
-          <div key={idx} className="border border-slate-200 rounded-lg p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium text-slate-900">День {idx + 1}</h3>
-              <button
-                type="button"
-                onClick={() => {
-                  const currentItinerary = getValues("itinerary") || []
-                  const newItinerary = currentItinerary.filter((_, i) => i !== idx)
-                  reset({
-                    ...getValues(),
-                    itinerary: newItinerary,
-                  })
-                }}
-                className="text-red-600 hover:text-red-700"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Название</label>
-              <input
-                {...register(`itinerary.${idx}.title`)}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
-                placeholder="Название дня (будет автоматически переведено на все языки)"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Описание</label>
-              <textarea
-                {...register(`itinerary.${idx}.description`)}
-                rows={3}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
-                placeholder="Описание дня (будет автоматически переведено на все языки)"
-              />
-            </div>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-slate-900">Маршрут</h2>
+          <button
+            type="button"
+            onClick={() => {
+              const currentItinerary = getValues("itinerary") || []
+              reset({
+                ...getValues(),
+                itinerary: [...currentItinerary, { 
+                  title: "", 
+                  description: "",
+                  accommodation: [],
+                  meals: [],
+                  includedActivities: [],
+                  optionalActivities: [],
+                  specialInformation: "",
+                }],
+              })
+            }}
+            className="flex items-center gap-2 text-accent hover:text-orange-600 text-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Добавить день
+          </button>
+        </div>
+
+        {/* Itinerary Image Upload */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Изображение маршрута</label>
+          <div className="border-2 border-dashed border-slate-200 rounded-lg p-4">
+            {itineraryImage ? (
+              <div className="relative group">
+                <img
+                  src={itineraryImage}
+                  alt="Itinerary"
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    reset({
+                      ...getValues(),
+                      itineraryImage: "",
+                    })
+                  }}
+                  className="absolute inset-0 bg-black bg-opacity-50 rounded-lg opacity-0 group-hover:opacity-100 transition flex items-center justify-center"
+                >
+                  <Trash2 className="w-5 h-5 text-white" />
+                </button>
+              </div>
+            ) : (
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    
+                    setUploadingImages(true)
+                    try {
+                      const { storage, auth } = getFirebaseServices()
+                      
+                      if (!auth?.currentUser) {
+                        await new Promise<void>((resolve, reject) => {
+                          const timeout = setTimeout(() => {
+                            unsubscribe()
+                            reject(new Error("Таймаут ожидания авторизации"))
+                          }, 5000)
+                          
+                          const unsubscribe = onAuthStateChanged(auth!, (user) => {
+                            clearTimeout(timeout)
+                            unsubscribe()
+                            if (user) {
+                              resolve()
+                            } else {
+                              reject(new Error("Пользователь не авторизован"))
+                            }
+                          })
+                        })
+                      }
+                      
+                      if (auth?.currentUser) {
+                        await auth.currentUser.getIdToken(true)
+                      }
+                      
+                      const storageRef = ref(storage!, `tours/${tourId || "new"}/itinerary/${Date.now()}-${file.name}`)
+                      await uploadBytes(storageRef, file)
+                      const url = await getDownloadURL(storageRef)
+                      
+                      reset({
+                        ...getValues(),
+                        itineraryImage: url,
+                      })
+                    } catch (error: any) {
+                      console.error("Error uploading image:", error)
+                      alert(error.message || "Не удалось загрузить изображение")
+                    } finally {
+                      setUploadingImages(false)
+                    }
+                  }}
+                  disabled={uploadingImages}
+                  className="hidden"
+                  id="itinerary-image"
+                />
+                <label 
+                  htmlFor="itinerary-image"
+                  className="cursor-pointer flex flex-col items-center gap-2 text-slate-600"
+                >
+                  <div>{uploadingImages ? "Загрузка..." : "Нажмите, чтобы загрузить изображение маршрута"}</div>
+                </label>
+              </div>
+            )}
           </div>
-        ))}
-        <button
-          type="button"
-          onClick={() => {
-            const currentItinerary = getValues("itinerary") || []
-            reset({
-              ...getValues(),
-              itinerary: [...currentItinerary, { title: "", description: "" }],
-            })
-          }}
-          className="flex items-center gap-2 text-accent hover:text-orange-600"
-        >
-          <Plus className="w-4 h-4" />
-          Добавить день
-        </button>
+        </div>
+        
+        <Accordion type="multiple" className="space-y-2">
+          {itinerary.map((item, idx) => {
+            const dayTitle = watch(`itinerary.${idx}.title`) || ""
+            const dayAccommodation = watch(`itinerary.${idx}.accommodation`) || []
+            const dayMeals = watch(`itinerary.${idx}.meals`) || []
+            const dayIncludedActivities = watch(`itinerary.${idx}.includedActivities`) || []
+            const dayOptionalActivities = watch(`itinerary.${idx}.optionalActivities`) || []
+            
+            return (
+              <AccordionItem key={idx} value={`day-${idx}`} className="border border-slate-200 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-3 flex-1">
+                    <span className="font-semibold text-slate-900">День {idx + 1}</span>
+                    {dayTitle && <span className="text-slate-600">- {dayTitle}</span>}
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pb-4">
+                  {/* Day Name */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Название дня (будет автоматически переведено на все языки)
+                    </label>
+                    <input
+                      {...register(`itinerary.${idx}.title`)}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                      placeholder="Введите название дня"
+                    />
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Описание (будет автоматически переведено на все языки)
+                    </label>
+                    <textarea
+                      {...register(`itinerary.${idx}.description`)}
+                      rows={4}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                      placeholder="Введите описание дня"
+                    />
+                  </div>
+
+                  {/* Accommodation */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Размещение</label>
+                    <div className="space-y-2">
+                      {dayAccommodation.map((_, accIdx) => (
+                        <div key={accIdx} className="flex items-center gap-2">
+                          <input
+                            {...register(`itinerary.${idx}.accommodation.${accIdx}`)}
+                            className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                            placeholder="Размещение (будет автоматически переведено на все языки)"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentItinerary = getValues("itinerary") || []
+                              const newAccommodation = (currentItinerary[idx]?.accommodation || []).filter((_, i) => i !== accIdx)
+                              reset({
+                                ...getValues(),
+                                itinerary: currentItinerary.map((it, i) => 
+                                  i === idx ? { ...it, accommodation: newAccommodation } : it
+                                ),
+                              })
+                            }}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentItinerary = getValues("itinerary") || []
+                          const newAccommodation = [...(currentItinerary[idx]?.accommodation || []), ""]
+                          reset({
+                            ...getValues(),
+                            itinerary: currentItinerary.map((it, i) => 
+                              i === idx ? { ...it, accommodation: newAccommodation } : it
+                            ),
+                          })
+                        }}
+                        className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Добавить размещение
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Meals */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Питание</label>
+                    <div className="space-y-2">
+                      {dayMeals.map((_, mealIdx) => (
+                        <div key={mealIdx} className="flex items-center gap-2">
+                          <input
+                            {...register(`itinerary.${idx}.meals.${mealIdx}`)}
+                            className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                            placeholder="Питание (будет автоматически переведено на все языки)"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentItinerary = getValues("itinerary") || []
+                              const newMeals = (currentItinerary[idx]?.meals || []).filter((_, i) => i !== mealIdx)
+                              reset({
+                                ...getValues(),
+                                itinerary: currentItinerary.map((it, i) => 
+                                  i === idx ? { ...it, meals: newMeals } : it
+                                ),
+                              })
+                            }}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentItinerary = getValues("itinerary") || []
+                          const newMeals = [...(currentItinerary[idx]?.meals || []), ""]
+                          reset({
+                            ...getValues(),
+                            itinerary: currentItinerary.map((it, i) => 
+                              i === idx ? { ...it, meals: newMeals } : it
+                            ),
+                          })
+                        }}
+                        className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Добавить питание
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Included Activities */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Включенные активности</label>
+                    <div className="space-y-2">
+                      {dayIncludedActivities.map((_, actIdx) => (
+                        <div key={actIdx} className="flex items-center gap-2">
+                          <input
+                            {...register(`itinerary.${idx}.includedActivities.${actIdx}`)}
+                            className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                            placeholder="Включенная активность (будет автоматически переведено на все языки)"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentItinerary = getValues("itinerary") || []
+                              const newActivities = (currentItinerary[idx]?.includedActivities || []).filter((_, i) => i !== actIdx)
+                              reset({
+                                ...getValues(),
+                                itinerary: currentItinerary.map((it, i) => 
+                                  i === idx ? { ...it, includedActivities: newActivities } : it
+                                ),
+                              })
+                            }}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentItinerary = getValues("itinerary") || []
+                          const newActivities = [...(currentItinerary[idx]?.includedActivities || []), ""]
+                          reset({
+                            ...getValues(),
+                            itinerary: currentItinerary.map((it, i) => 
+                              i === idx ? { ...it, includedActivities: newActivities } : it
+                            ),
+                          })
+                        }}
+                        className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Добавить включенную активность
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Optional Activities */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Опциональные активности</label>
+                    <div className="space-y-2">
+                      {dayOptionalActivities.map((_, actIdx) => (
+                        <div key={actIdx} className="flex items-center gap-2">
+                          <input
+                            {...register(`itinerary.${idx}.optionalActivities.${actIdx}`)}
+                            className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                            placeholder="Опциональная активность (будет автоматически переведено на все языки)"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentItinerary = getValues("itinerary") || []
+                              const newActivities = (currentItinerary[idx]?.optionalActivities || []).filter((_, i) => i !== actIdx)
+                              reset({
+                                ...getValues(),
+                                itinerary: currentItinerary.map((it, i) => 
+                                  i === idx ? { ...it, optionalActivities: newActivities } : it
+                                ),
+                              })
+                            }}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentItinerary = getValues("itinerary") || []
+                          const newActivities = [...(currentItinerary[idx]?.optionalActivities || []), ""]
+                          reset({
+                            ...getValues(),
+                            itinerary: currentItinerary.map((it, i) => 
+                              i === idx ? { ...it, optionalActivities: newActivities } : it
+                            ),
+                          })
+                        }}
+                        className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Добавить опциональную активность
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Special Information */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Особая информация (будет автоматически переведено на все языки)
+                    </label>
+                    <textarea
+                      {...register(`itinerary.${idx}.specialInformation`)}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                      placeholder="Введите особую информацию для этого дня"
+                    />
+                  </div>
+
+                  {/* Delete Day Button */}
+                  <div className="pt-2 border-t border-slate-200">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentItinerary = getValues("itinerary") || []
+                        const newItinerary = currentItinerary.filter((_, i) => i !== idx)
+                        reset({
+                          ...getValues(),
+                          itinerary: newItinerary,
+                        })
+                      }}
+                      className="flex items-center gap-2 text-red-600 hover:text-red-700 text-sm"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Удалить день
+                    </button>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )
+          })}
+        </Accordion>
       </div>
 
       {/* Dates */}
@@ -744,7 +1117,7 @@ export function TourForm({ tourId }: TourFormProps) {
       <div className="flex gap-4">
         <button
           type="submit"
-          disabled={isSubmitting || !isValid}
+          disabled={isSubmitting}
           className="flex-1 bg-accent text-white py-3 rounded-lg hover:bg-orange-600 transition disabled:opacity-50"
         >
           {isSubmitting ? "Сохранение..." : tourId ? "Обновить тур" : "Создать тур"}
