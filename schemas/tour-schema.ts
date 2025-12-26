@@ -48,6 +48,16 @@ export const tourSchema = z.object({
     notIncluded: z.array(z.string().optional().or(z.literal(""))).optional(),
   }).optional(),
   location: z.string().optional().or(z.literal("")),
+  destinations: z.array(z.string().optional().or(z.literal(""))).optional(),
+  meals: z.string().optional().or(z.literal("")),
+  transport: z.string().optional().or(z.literal("")),
+  accommodation: z.string().optional().or(z.literal("")),
+  premiumInclusions: z.array(z.string().optional().or(z.literal(""))).optional(),
+  includedActivities: z.array(z.string().optional().or(z.literal(""))).optional(),
+  optionalActivities: z.array(z.string().optional().or(z.literal(""))).optional(),
+  isThisTripRightForYou: z.string().optional().or(z.literal("")),
+  accommodationRichText: z.string().optional().or(z.literal("")),
+  joiningPoint: z.string().optional().or(z.literal("")),
 })
 
 export type TourFormData = z.infer<typeof tourSchema>

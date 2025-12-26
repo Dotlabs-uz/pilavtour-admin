@@ -49,16 +49,16 @@ export async function POST(req: NextRequest) {
       try {
         const detectResponse = await fetch(
           `https://translation.googleapis.com/language/translate/v2/detect?key=${apiKey}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              q: text,
-            }),
-          },
-        )
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          q: text,
+        }),
+      },
+    )
 
         if (detectResponse.ok) {
           const detectResult = await detectResponse.json()
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
           return { lang, text } as { lang: Language; text: string } // Fallback to original text
         }
 
-        const result = await response.json()
+    const result = await response.json()
         const translatedText = result.data.translations[0].translatedText
         // Decode HTML entities (e.g., &#39; -> ')
         const decodedText = decodeHtmlEntities(translatedText)

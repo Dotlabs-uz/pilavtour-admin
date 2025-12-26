@@ -275,8 +275,8 @@ export function ArticlesTable({ filters }: ArticlesTableProps) {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition">
-                          <MoreHorizontal className="w-5 h-5" />
-                        </button>
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
                         <DropdownMenuItem asChild>
@@ -300,10 +300,10 @@ export function ArticlesTable({ filters }: ArticlesTableProps) {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           variant="destructive"
-                          onClick={() => handleDelete(article.id)}
-                          disabled={deletingId === article.id}
-                        >
-                          <Trash2 className="w-4 h-4" />
+                            onClick={() => handleDelete(article.id)}
+                            disabled={deletingId === article.id}
+                          >
+                            <Trash2 className="w-4 h-4" />
                           {deletingId === article.id ? "Удаление..." : "Удалить"}
                         </DropdownMenuItem>
                       </DropdownMenuContent>

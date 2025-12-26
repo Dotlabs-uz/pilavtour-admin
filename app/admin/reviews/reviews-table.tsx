@@ -231,16 +231,16 @@ export function ReviewsTable({ filters }: ReviewsTableProps) {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition">
-                          <MoreHorizontal className="w-5 h-5" />
-                        </button>
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
                         <DropdownMenuItem
                           variant="destructive"
-                          onClick={() => handleDelete(review.id)}
-                          disabled={deletingId === review.id}
-                        >
-                          <Trash2 className="w-4 h-4" />
+                            onClick={() => handleDelete(review.id)}
+                            disabled={deletingId === review.id}
+                          >
+                            <Trash2 className="w-4 h-4" />
                           {deletingId === review.id ? "Удаление..." : "Удалить"}
                         </DropdownMenuItem>
                       </DropdownMenuContent>

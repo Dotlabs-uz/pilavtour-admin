@@ -278,16 +278,16 @@ export function UsersTable({ filters }: UsersTableProps) {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition">
-                          <MoreHorizontal className="w-5 h-5" />
-                        </button>
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
                         <DropdownMenuItem
                           variant="destructive"
-                          onClick={() => handleDelete(user.id)}
-                          disabled={deletingId === user.id}
-                        >
-                          <Trash2 className="w-4 h-4" />
+                            onClick={() => handleDelete(user.id)}
+                            disabled={deletingId === user.id}
+                          >
+                            <Trash2 className="w-4 h-4" />
                           {deletingId === user.id ? "Удаление..." : "Удалить"}
                         </DropdownMenuItem>
                       </DropdownMenuContent>

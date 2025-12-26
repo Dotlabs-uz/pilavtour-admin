@@ -16,6 +16,7 @@ import { onAuthStateChanged } from "firebase/auth"
 import { translateText } from "@/lib/translation"
 import { Slider } from "@/components/ui/slider"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
+import { BasicHtmlEditor } from "@/components/basic-html-editor"
 
 const toDateInputValue = (value?: Date | string | null) => {
   if (!value) return ""
@@ -52,6 +53,16 @@ export function TourForm({ tourId }: TourFormProps) {
   const itineraryImage = watch("itineraryImage") || ""
   const inclusions = watch("inclusions") || { included: [], notIncluded: [] }
   const physicalRating = watch("physicalRating") ?? 5
+  const destinations = watch("destinations") || []
+  const meals = watch("meals") || ""
+  const transport = watch("transport") || ""
+  const accommodation = watch("accommodation") || ""
+  const premiumInclusions = watch("premiumInclusions") || []
+  const includedActivities = watch("includedActivities") || []
+  const optionalActivities = watch("optionalActivities") || []
+  const isThisTripRightForYou = watch("isThisTripRightForYou") || ""
+  const accommodationRichText = watch("accommodationRichText") || ""
+  const joiningPoint = watch("joiningPoint") || ""
 
   const { fields: dateFields, append: appendDate, remove: removeDate } = useFieldArray({
     control,
@@ -102,6 +113,30 @@ export function TourForm({ tourId }: TourFormProps) {
             typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
           ) || []
 
+        // Normalize new fields
+        const normalizeDestinations =
+          data.destinations?.map((item: any) =>
+            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
+          ) || []
+        const normalizeMeals = typeof data.meals === "string" ? data.meals : data.meals?.ru || data.meals?.en || data.meals?.uz || ""
+        const normalizeTransport = typeof data.transport === "string" ? data.transport : data.transport?.ru || data.transport?.en || data.transport?.uz || ""
+        const normalizeAccommodation = typeof data.accommodation === "string" ? data.accommodation : data.accommodation?.ru || data.accommodation?.en || data.accommodation?.uz || ""
+        const normalizePremiumInclusions =
+          data.premiumInclusions?.map((item: any) =>
+            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
+          ) || []
+        const normalizeIncludedActivities =
+          data.includedActivities?.map((item: any) =>
+            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
+          ) || []
+        const normalizeOptionalActivities =
+          data.optionalActivities?.map((item: any) =>
+            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
+          ) || []
+        const normalizeIsThisTripRightForYou = typeof data.isThisTripRightForYou === "string" ? data.isThisTripRightForYou : data.isThisTripRightForYou?.ru || data.isThisTripRightForYou?.en || data.isThisTripRightForYou?.uz || ""
+        const normalizeAccommodationRichText = typeof data.accommodationRichText === "string" ? data.accommodationRichText : data.accommodationRichText?.ru || data.accommodationRichText?.en || data.accommodationRichText?.uz || ""
+        const normalizeJoiningPoint = typeof data.joiningPoint === "string" ? data.joiningPoint : data.joiningPoint?.ru || data.joiningPoint?.en || data.joiningPoint?.uz || ""
+
         reset({
           name: data.name?.ru || data.name?.en || data.name?.uz || "",
           title: data.title?.ru || data.title?.en || data.title?.uz || "",
@@ -120,6 +155,16 @@ export function TourForm({ tourId }: TourFormProps) {
           dates: normalizeDates,
           inclusions: { included: normalizeIncluded, notIncluded: normalizeNotIncluded },
           location: typeof data.location === "string" ? data.location : data.location?.ru || data.location?.en || data.location?.uz || "",
+          destinations: normalizeDestinations,
+          meals: normalizeMeals,
+          transport: normalizeTransport,
+          accommodation: normalizeAccommodation,
+          premiumInclusions: normalizePremiumInclusions,
+          includedActivities: normalizeIncludedActivities,
+          optionalActivities: normalizeOptionalActivities,
+          isThisTripRightForYou: normalizeIsThisTripRightForYou,
+          accommodationRichText: normalizeAccommodationRichText,
+          joiningPoint: normalizeJoiningPoint,
         })
       }
     } catch (error) {
@@ -265,6 +310,28 @@ export function TourForm({ tourId }: TourFormProps) {
       const translatedTheme = data.theme ? await translateText(data.theme, [...LANGUAGES]) : undefined
       const translatedGroupSize = data.groupSize ? await translateText(data.groupSize, [...LANGUAGES]) : undefined
 
+      // Translate new fields
+      const translatedDestinations = await Promise.all(
+        (data.destinations || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
+      )
+      const translatedMeals = data.meals ? await translateText(data.meals, [...LANGUAGES]) : undefined
+      const translatedTransport = data.transport ? await translateText(data.transport, [...LANGUAGES]) : undefined
+      const translatedAccommodation = data.accommodation ? await translateText(data.accommodation, [...LANGUAGES]) : undefined
+      const translatedPremiumInclusions = await Promise.all(
+        (data.premiumInclusions || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
+      )
+      const translatedIncludedActivities = await Promise.all(
+        (data.includedActivities || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
+      )
+      const translatedOptionalActivities = await Promise.all(
+        (data.optionalActivities || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
+      )
+
+      // Translate new rich text fields (HTML content will be preserved by Google Translate)
+      const translatedIsThisTripRightForYou = data.isThisTripRightForYou ? await translateText(data.isThisTripRightForYou, [...LANGUAGES]) : undefined
+      const translatedAccommodationRichText = data.accommodationRichText ? await translateText(data.accommodationRichText, [...LANGUAGES]) : undefined
+      const translatedJoiningPoint = data.joiningPoint ? await translateText(data.joiningPoint, [...LANGUAGES]) : undefined
+
       // Convert date strings to Date objects for Firestore
       const normalizedDates = (data.dates || [])
         .map((date) => {
@@ -284,7 +351,23 @@ export function TourForm({ tourId }: TourFormProps) {
         .filter((date) => date.startDate && date.endDate && !isNaN(date.startDate.getTime()) && !isNaN(date.endDate.getTime())) // Only include valid dates with both start and end
 
       const { db } = getFirebaseServices()
-      const tourData = {
+      
+      // Helper function to remove undefined values
+      const removeUndefined = (obj: any): any => {
+        if (obj === null || obj === undefined) return null
+        if (Array.isArray(obj)) return obj.map(removeUndefined)
+        if (typeof obj !== 'object') return obj
+        
+        const cleaned: any = {}
+        for (const [key, value] of Object.entries(obj)) {
+          if (value !== undefined) {
+            cleaned[key] = removeUndefined(value)
+          }
+        }
+        return cleaned
+      }
+
+      const tourData = removeUndefined({
         name: translatedName,
         title: translatedTitle,
         description: translatedDescription,
@@ -305,9 +388,19 @@ export function TourForm({ tourId }: TourFormProps) {
           notIncluded: translatedNotIncluded,
         } : undefined,
         location: translatedLocation,
+        destinations: translatedDestinations.length > 0 ? translatedDestinations : undefined,
+        meals: translatedMeals,
+        transport: translatedTransport,
+        accommodation: translatedAccommodation,
+        premiumInclusions: translatedPremiumInclusions.length > 0 ? translatedPremiumInclusions : undefined,
+        includedActivities: translatedIncludedActivities.length > 0 ? translatedIncludedActivities : undefined,
+        optionalActivities: translatedOptionalActivities.length > 0 ? translatedOptionalActivities : undefined,
+        isThisTripRightForYou: translatedIsThisTripRightForYou,
+        accommodationRichText: translatedAccommodationRichText,
+        joiningPoint: translatedJoiningPoint,
         updatedAt: serverTimestamp(),
         ...(tourId ? {} : { createdAt: serverTimestamp() }),
-      }
+      })
 
       if (tourId) {
         await updateDoc(doc(db!, "tours", tourId), tourData)
@@ -360,13 +453,12 @@ export function TourForm({ tourId }: TourFormProps) {
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
         <h2 className="text-lg font-semibold text-slate-900">Описание</h2>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Описание тура</label>
-          <textarea
-            {...register("description")}
-            maxLength={5000}
-            rows={6}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
-            placeholder="Введите описание тура (будет автоматически переведено на все языки)"
+          <label className="block text-sm font-medium text-slate-700 mb-2">Описание тура (будет автоматически переведено на все языки)</label>
+          <BasicHtmlEditor
+            value={watch("description") || ""}
+            onChange={(html) => setValue("description", html, { shouldValidate: true })}
+            placeholder="Введите описание тура"
+            rows={8}
           />
           {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
         </div>
@@ -504,6 +596,221 @@ export function TourForm({ tourId }: TourFormProps) {
             </div>
             {errors.physicalRating && <p className="text-red-500 text-xs mt-1">{errors.physicalRating.message}</p>}
           </div>
+        </div>
+      </div>
+
+      {/* Inclusions and Activities */}
+      <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-6">
+        <h2 className="text-lg font-semibold text-slate-900">Включения и активности</h2>
+        
+        {/* Destinations */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-slate-700">Направления</label>
+          {destinations.map((_, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              <input
+                {...register(`destinations.${idx}`)}
+                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                placeholder="Направление (будет автоматически переведено на все языки)"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const currentDestinations = getValues("destinations") || []
+                  const newDestinations = currentDestinations.filter((_, i) => i !== idx)
+                  reset({
+                    ...getValues(),
+                    destinations: newDestinations,
+                  })
+                }}
+                className="text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              const currentDestinations = getValues("destinations") || []
+              reset({
+                ...getValues(),
+                destinations: [...currentDestinations, ""],
+              })
+            }}
+            className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
+          >
+            <Plus className="w-4 h-4" />
+            Добавить направление
+          </button>
+        </div>
+
+        <div className="border-t border-slate-200 pt-4"></div>
+
+        {/* Meals, Transport, Accommodation */}
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Питание (будет автоматически переведено на все языки)
+            </label>
+            <input
+              {...register("meals")}
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+              placeholder="Введите информацию о питании"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Транспорт (будет автоматически переведено на все языки)
+            </label>
+            <input
+              {...register("transport")}
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+              placeholder="Введите информацию о транспорте"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Размещение (будет автоматически переведено на все языки)
+            </label>
+            <input
+              {...register("accommodation")}
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+              placeholder="Введите информацию о размещении"
+            />
+          </div>
+        </div>
+
+        <div className="border-t border-slate-200 pt-4"></div>
+
+        {/* Premium Inclusions */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-slate-700">Премиум включения</label>
+          {premiumInclusions.map((_, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              <input
+                {...register(`premiumInclusions.${idx}`)}
+                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                placeholder="Премиум включение (будет автоматически переведено на все языки)"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const currentPremiumInclusions = getValues("premiumInclusions") || []
+                  const newPremiumInclusions = currentPremiumInclusions.filter((_, i) => i !== idx)
+                  reset({
+                    ...getValues(),
+                    premiumInclusions: newPremiumInclusions,
+                  })
+                }}
+                className="text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              const currentPremiumInclusions = getValues("premiumInclusions") || []
+              reset({
+                ...getValues(),
+                premiumInclusions: [...currentPremiumInclusions, ""],
+              })
+            }}
+            className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
+          >
+            <Plus className="w-4 h-4" />
+            Добавить премиум включение
+          </button>
+        </div>
+
+        <div className="border-t border-slate-200 pt-4"></div>
+
+        {/* Included Activities */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-slate-700">Включенные активности</label>
+          {includedActivities.map((_, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              <input
+                {...register(`includedActivities.${idx}`)}
+                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                placeholder="Включенная активность (будет автоматически переведено на все языки)"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const currentIncludedActivities = getValues("includedActivities") || []
+                  const newIncludedActivities = currentIncludedActivities.filter((_, i) => i !== idx)
+                  reset({
+                    ...getValues(),
+                    includedActivities: newIncludedActivities,
+                  })
+                }}
+                className="text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              const currentIncludedActivities = getValues("includedActivities") || []
+              reset({
+                ...getValues(),
+                includedActivities: [...currentIncludedActivities, ""],
+              })
+            }}
+            className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
+          >
+            <Plus className="w-4 h-4" />
+            Добавить включенную активность
+          </button>
+        </div>
+
+        <div className="border-t border-slate-200 pt-4"></div>
+
+        {/* Optional Activities */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-slate-700">Опциональные активности</label>
+          {optionalActivities.map((_, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              <input
+                {...register(`optionalActivities.${idx}`)}
+                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                placeholder="Опциональная активность (будет автоматически переведено на все языки)"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const currentOptionalActivities = getValues("optionalActivities") || []
+                  const newOptionalActivities = currentOptionalActivities.filter((_, i) => i !== idx)
+                  reset({
+                    ...getValues(),
+                    optionalActivities: newOptionalActivities,
+                  })
+                }}
+                className="text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              const currentOptionalActivities = getValues("optionalActivities") || []
+              reset({
+                ...getValues(),
+                optionalActivities: [...currentOptionalActivities, ""],
+              })
+            }}
+            className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
+          >
+            <Plus className="w-4 h-4" />
+            Добавить опциональную активность
+          </button>
         </div>
       </div>
 
@@ -706,11 +1013,11 @@ export function TourForm({ tourId }: TourFormProps) {
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Описание (будет автоматически переведено на все языки)
                     </label>
-                    <textarea
-                      {...register(`itinerary.${idx}.description`)}
-                      rows={4}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                    <BasicHtmlEditor
+                      value={watch(`itinerary.${idx}.description`) || ""}
+                      onChange={(html) => setValue(`itinerary.${idx}.description`, html, { shouldValidate: true })}
                       placeholder="Введите описание дня"
+                      rows={8}
                     />
                   </div>
 
@@ -915,11 +1222,11 @@ export function TourForm({ tourId }: TourFormProps) {
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Особая информация (будет автоматически переведено на все языки)
                     </label>
-                    <textarea
-                      {...register(`itinerary.${idx}.specialInformation`)}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+                    <BasicHtmlEditor
+                      value={watch(`itinerary.${idx}.specialInformation`) || ""}
+                      onChange={(html) => setValue(`itinerary.${idx}.specialInformation`, html, { shouldValidate: true })}
                       placeholder="Введите особую информацию для этого дня"
+                      rows={8}
                     />
                   </div>
 
@@ -1110,6 +1417,54 @@ export function TourForm({ tourId }: TourFormProps) {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Is this trip right for you? */}
+      <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-slate-900">Подходит ли вам это путешествие?</h2>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Подходит ли вам это путешествие? (будет автоматически переведено на все языки)
+          </label>
+          <BasicHtmlEditor
+            value={isThisTripRightForYou}
+            onChange={(html) => setValue("isThisTripRightForYou", html, { shouldValidate: true })}
+            placeholder="Введите информацию о том, подходит ли это путешествие"
+            rows={8}
+          />
+        </div>
+      </div>
+
+      {/* Accommodation */}
+      <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-slate-900">Размещение</h2>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Размещение (будет автоматически переведено на все языки)
+          </label>
+          <BasicHtmlEditor
+            value={accommodationRichText}
+            onChange={(html) => setValue("accommodationRichText", html, { shouldValidate: true })}
+            placeholder="Введите информацию о размещении"
+            rows={8}
+          />
+        </div>
+      </div>
+
+      {/* Joining Point */}
+      <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
+        <h2 className="text-lg font-semibold text-slate-900">Точка отправления</h2>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Точка отправления (будет автоматически переведено на все языки)
+          </label>
+          <BasicHtmlEditor
+            value={joiningPoint}
+            onChange={(html) => setValue("joiningPoint", html, { shouldValidate: true })}
+            placeholder="Введите информацию о точке отправления"
+            rows={8}
+          />
         </div>
       </div>
 
