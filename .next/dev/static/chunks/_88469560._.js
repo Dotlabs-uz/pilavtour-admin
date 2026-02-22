@@ -691,7 +691,7 @@ function BookingDetailPage() {
                                     children: "Информация о бронировании и пользователе"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                    lineNumber: 152,
+                                    lineNumber: 154,
                                     columnNumber: 13
                                 }, this)
                             ]
@@ -717,7 +717,7 @@ function BookingDetailPage() {
                                     children: "Информация о бронировании"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                    lineNumber: 159,
+                                    lineNumber: 163,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -730,7 +730,7 @@ function BookingDetailPage() {
                                                     children: "ID бронирования"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 162,
+                                                    lineNumber: 168,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -738,13 +738,13 @@ function BookingDetailPage() {
                                                     children: booking.id
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 163,
+                                                    lineNumber: 171,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 161,
+                                            lineNumber: 167,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -754,7 +754,7 @@ function BookingDetailPage() {
                                                     children: "Статус"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 166,
+                                                    lineNumber: 174,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -764,36 +764,12 @@ function BookingDetailPage() {
                                                         children: getStatusText(booking.status)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                        lineNumber: 168,
+                                                        lineNumber: 178,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 167,
-                                                    columnNumber: 17
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 165,
-                                            columnNumber: 15
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                    className: "text-sm font-medium text-slate-600",
-                                                    children: "Количество человек"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 174,
-                                                    columnNumber: 17
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-slate-900 mt-1",
-                                                    children: booking.numberOfPeople
-                                                }, void 0, false, {
-                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 175,
+                                                    lineNumber: 177,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
@@ -806,10 +782,34 @@ function BookingDetailPage() {
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
                                                     className: "text-sm font-medium text-slate-600",
+                                                    children: "Количество человек"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 186,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-slate-900 mt-1",
+                                                    children: booking.numberOfPeople
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 189,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                            lineNumber: 185,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-sm font-medium text-slate-600",
                                                     children: "Общая цена"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 178,
+                                                    lineNumber: 192,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -817,13 +817,13 @@ function BookingDetailPage() {
                                                     children: booking.totalPrice
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 179,
+                                                    lineNumber: 195,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 177,
+                                            lineNumber: 191,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -833,7 +833,7 @@ function BookingDetailPage() {
                                                     children: "Дата бронирования"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 182,
+                                                    lineNumber: 200,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -847,13 +847,13 @@ function BookingDetailPage() {
                                                     })
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 183,
+                                                    lineNumber: 203,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 181,
+                                            lineNumber: 199,
                                             columnNumber: 15
                                         }, this),
                                         booking.travelDate && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -863,7 +863,7 @@ function BookingDetailPage() {
                                                     children: "Дата поездки"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 195,
+                                                    lineNumber: 215,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -875,13 +875,13 @@ function BookingDetailPage() {
                                                     })
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 196,
+                                                    lineNumber: 218,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 194,
+                                            lineNumber: 214,
                                             columnNumber: 17
                                         }, this),
                                         booking.notes && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -891,7 +891,7 @@ function BookingDetailPage() {
                                                     children: "Примечания"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 207,
+                                                    lineNumber: 229,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -899,13 +899,13 @@ function BookingDetailPage() {
                                                     children: booking.notes
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 208,
+                                                    lineNumber: 232,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 206,
+                                            lineNumber: 228,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -915,7 +915,7 @@ function BookingDetailPage() {
                                                     children: "Дата создания"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 212,
+                                                    lineNumber: 236,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -929,25 +929,293 @@ function BookingDetailPage() {
                                                     })
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 213,
+                                                    lineNumber: 239,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 211,
+                                            lineNumber: 235,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-sm font-medium text-slate-600",
+                                                    children: "Способ связи"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 250,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-slate-900 mt-1",
+                                                    children: booking.contactMethod ?? "-"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 253,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                            lineNumber: 249,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-sm font-medium text-slate-600",
+                                                    children: "Email"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 258,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-slate-900 mt-1",
+                                                    children: booking.email ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                                        href: `mailto:${booking.email}`,
+                                                        className: "text-blue-600 underline",
+                                                        children: booking.email
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                        lineNumber: 263,
+                                                        columnNumber: 21
+                                                    }, this) : "-"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 261,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                            lineNumber: 257,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-sm font-medium text-slate-600",
+                                                    children: "Телефон"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 275,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-slate-900 mt-1",
+                                                    children: booking.phone ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                                        href: `https://wa.me/${booking.phone.replace(/[^0-9]/g, "")}`,
+                                                        target: "_blank",
+                                                        rel: "noopener noreferrer",
+                                                        className: "text-blue-600 underline",
+                                                        children: booking.phone
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                        lineNumber: 280,
+                                                        columnNumber: 21
+                                                    }, this) : "-"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 278,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                            lineNumber: 274,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-sm font-medium text-slate-600",
+                                                    children: "Telegram/WhatsApp"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 294,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-slate-900 mt-1",
+                                                    children: booking.whatsappTelegram ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                                        href: `https://t.me/${booking.whatsappTelegram.replace(/^@/, "")}`,
+                                                        target: "_blank",
+                                                        rel: "noopener noreferrer",
+                                                        className: "text-blue-600 underline",
+                                                        children: booking.whatsappTelegram
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                        lineNumber: 299,
+                                                        columnNumber: 21
+                                                    }, this) : "-"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 297,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                            lineNumber: 293,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-sm font-medium text-slate-600",
+                                                    children: "Комментарий"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 313,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-slate-900 mt-1",
+                                                    children: booking.comment ?? "-"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 316,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                            lineNumber: 312,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-sm font-medium text-slate-600",
+                                                    children: "Цена за человека"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 319,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-slate-900 mt-1",
+                                                    children: typeof booking.pricePerPerson === "number" || typeof booking.pricePerPerson === "string" ? booking.pricePerPerson : "-"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 322,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                            lineNumber: 318,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-sm font-medium text-slate-600",
+                                                    children: "Дата начала"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 330,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-slate-900 mt-1",
+                                                    children: booking.startDate ? typeof booking.startDate === "string" ? booking.startDate : booking.startDate.toLocaleString?.("ru-RU") ?? "-" : "-"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 333,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                            lineNumber: 329,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-sm font-medium text-slate-600",
+                                                    children: "Дата окончания"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 342,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-slate-900 mt-1",
+                                                    children: booking.endDate ? typeof booking.endDate === "string" ? booking.endDate : booking.endDate.toLocaleString?.("ru-RU") ?? "-" : "-"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 345,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                            lineNumber: 341,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-sm font-medium text-slate-600",
+                                                    children: "ID тура"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 354,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-slate-900 mt-1",
+                                                    children: booking.tourId ?? "-"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 357,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                            lineNumber: 353,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                    className: "text-sm font-medium text-slate-600",
+                                                    children: "Имя"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 360,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-slate-900 mt-1",
+                                                    children: booking.name ?? booking.user?.name ?? "-"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                                    lineNumber: 363,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/app/admin/bookings/[id]/page.tsx",
+                                            lineNumber: 359,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                    lineNumber: 160,
+                                    lineNumber: 166,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                            lineNumber: 158,
+                            lineNumber: 162,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -958,7 +1226,7 @@ function BookingDetailPage() {
                                     children: "Информация о пользователе"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                    lineNumber: 228,
+                                    lineNumber: 372,
                                     columnNumber: 13
                                 }, this),
                                 booking.user ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -973,14 +1241,14 @@ function BookingDetailPage() {
                                                     className: "h-16 w-16 rounded-full object-cover"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 233,
+                                                    lineNumber: 379,
                                                     columnNumber: 21
                                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "h-16 w-16 rounded-full bg-slate-200 flex items-center justify-center text-xl font-semibold text-slate-600",
                                                     children: booking.user.name?.charAt(0).toUpperCase() || "?"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 239,
+                                                    lineNumber: 385,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -990,7 +1258,7 @@ function BookingDetailPage() {
                                                             children: booking.user.name
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                            lineNumber: 244,
+                                                            lineNumber: 390,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -998,19 +1266,19 @@ function BookingDetailPage() {
                                                             children: booking.user.email
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                            lineNumber: 245,
+                                                            lineNumber: 393,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 243,
+                                                    lineNumber: 389,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 231,
+                                            lineNumber: 377,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1020,7 +1288,7 @@ function BookingDetailPage() {
                                                     children: "ID пользователя"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 249,
+                                                    lineNumber: 397,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1028,13 +1296,13 @@ function BookingDetailPage() {
                                                     children: booking.user.id
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 250,
+                                                    lineNumber: 400,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 248,
+                                            lineNumber: 396,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1044,7 +1312,7 @@ function BookingDetailPage() {
                                                     children: "Роль"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 253,
+                                                    lineNumber: 403,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1052,13 +1320,13 @@ function BookingDetailPage() {
                                                     children: booking.user.role
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 254,
+                                                    lineNumber: 406,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 252,
+                                            lineNumber: 402,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1068,7 +1336,7 @@ function BookingDetailPage() {
                                                     children: "Дата регистрации"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 257,
+                                                    lineNumber: 411,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1080,32 +1348,32 @@ function BookingDetailPage() {
                                                     })
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 258,
+                                                    lineNumber: 414,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 256,
+                                            lineNumber: 410,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                    lineNumber: 230,
+                                    lineNumber: 376,
                                     columnNumber: 15
                                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                     className: "text-slate-500",
                                     children: "Информация о пользователе не найдена"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                    lineNumber: 268,
+                                    lineNumber: 424,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                            lineNumber: 227,
+                            lineNumber: 371,
                             columnNumber: 11
                         }, this),
                         booking.tour && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1116,7 +1384,7 @@ function BookingDetailPage() {
                                     children: "Информация о туре"
                                 }, void 0, false, {
                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                    lineNumber: 275,
+                                    lineNumber: 433,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1129,7 +1397,7 @@ function BookingDetailPage() {
                                                     children: "Название тура"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 278,
+                                                    lineNumber: 438,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1137,13 +1405,13 @@ function BookingDetailPage() {
                                                     children: booking.tour.title?.ru || booking.tour.title?.uz || "Название не указано"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 279,
+                                                    lineNumber: 441,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 277,
+                                            lineNumber: 437,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1153,7 +1421,7 @@ function BookingDetailPage() {
                                                     children: "ID тура"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 282,
+                                                    lineNumber: 448,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1161,13 +1429,13 @@ function BookingDetailPage() {
                                                     children: booking.tour.id
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 283,
+                                                    lineNumber: 451,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 281,
+                                            lineNumber: 447,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1177,7 +1445,7 @@ function BookingDetailPage() {
                                                     children: "Стиль"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 286,
+                                                    lineNumber: 454,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1185,13 +1453,13 @@ function BookingDetailPage() {
                                                     children: booking.tour.style
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 287,
+                                                    lineNumber: 457,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 285,
+                                            lineNumber: 453,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1201,7 +1469,7 @@ function BookingDetailPage() {
                                                     children: "Цена"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 290,
+                                                    lineNumber: 460,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1209,13 +1477,13 @@ function BookingDetailPage() {
                                                     children: booking.tour.price
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 291,
+                                                    lineNumber: 463,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 289,
+                                            lineNumber: 459,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1225,26 +1493,27 @@ function BookingDetailPage() {
                                                     children: "Длительность"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 294,
+                                                    lineNumber: 468,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                     className: "text-slate-900 mt-1",
                                                     children: [
                                                         booking.tour.duration.days,
-                                                        " дней / ",
+                                                        " дней /",
+                                                        " ",
                                                         booking.tour.duration.nights,
                                                         " ночей"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 295,
+                                                    lineNumber: 471,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 293,
+                                            lineNumber: 467,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1254,7 +1523,7 @@ function BookingDetailPage() {
                                                     children: "Рейтинг"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 300,
+                                                    lineNumber: 477,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1262,13 +1531,13 @@ function BookingDetailPage() {
                                                     children: booking.tour.rating
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 301,
+                                                    lineNumber: 480,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 299,
+                                            lineNumber: 476,
                                             columnNumber: 17
                                         }, this),
                                         booking.tour.location && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1278,7 +1547,7 @@ function BookingDetailPage() {
                                                     children: "Местоположение"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 305,
+                                                    lineNumber: 484,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1286,31 +1555,31 @@ function BookingDetailPage() {
                                                     children: booking.tour.location.ru || booking.tour.location.uz
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                                    lineNumber: 306,
+                                                    lineNumber: 487,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                            lineNumber: 304,
+                                            lineNumber: 483,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                                    lineNumber: 276,
+                                    lineNumber: 436,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                            lineNumber: 274,
+                            lineNumber: 432,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/admin/bookings/[id]/page.tsx",
-                    lineNumber: 156,
+                    lineNumber: 160,
                     columnNumber: 9
                 }, this)
             ]

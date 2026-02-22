@@ -1,70 +1,70 @@
-"use client"
+"use client";
 
-import { AdminLayout } from "@/components/admin-layout"
-import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import { getFirebaseServices } from "@/lib/firebase"
-import { doc, getDoc } from "firebase/firestore"
-import type { Booking, User, Tour } from "@/types"
-import { ArrowLeft } from "lucide-react"
+import { AdminLayout } from "@/components/admin-layout";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getFirebaseServices } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import type { Booking, User, Tour } from "@/types";
+import { ArrowLeft } from "lucide-react";
 
 export default function BookingDetailPage() {
-  const params = useParams()
-  const router = useRouter()
-  const bookingId = params.id as string
-  const [booking, setBooking] = useState<Booking | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const params = useParams();
+  const router = useRouter();
+  const bookingId = params.id as string;
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadBooking()
-  }, [bookingId])
+    loadBooking();
+  }, [bookingId]);
 
   const loadBooking = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const { db } = getFirebaseServices()
-      const bookingDoc = await getDoc(doc(db!, "bookings", bookingId))
+      const { db } = getFirebaseServices();
+      const bookingDoc = await getDoc(doc(db!, "bookings", bookingId));
 
       if (!bookingDoc.exists()) {
-        alert("Бронирование не найдено")
-        router.push("/admin/bookings")
-        return
+        alert("Бронирование не найдено");
+        router.push("/admin/bookings");
+        return;
       }
 
-      const data = bookingDoc.data()
-      let user: User | undefined
-      let tour: Tour | undefined
+      const data = bookingDoc.data();
+      let user: User | undefined;
+      let tour: Tour | undefined;
 
       // Fetch user data
       if (data.userId) {
         try {
-          const userDoc = await getDoc(doc(db!, "users", data.userId))
+          const userDoc = await getDoc(doc(db!, "users", data.userId));
           if (userDoc.exists()) {
             user = {
               id: userDoc.id,
               ...userDoc.data(),
               createdAt: userDoc.data().createdAt?.toDate?.() || new Date(),
-            } as User
+            } as User;
           }
         } catch (error) {
-          console.error("Error fetching user:", error)
+          console.error("Error fetching user:", error);
         }
       }
 
       // Fetch tour data
       if (data.tourId) {
         try {
-          const tourDoc = await getDoc(doc(db!, "tours", data.tourId))
+          const tourDoc = await getDoc(doc(db!, "tours", data.tourId));
           if (tourDoc.exists()) {
             tour = {
               id: tourDoc.id,
               ...tourDoc.data(),
               createdAt: tourDoc.data().createdAt?.toDate?.() || new Date(),
               updatedAt: tourDoc.data().updatedAt?.toDate?.() || new Date(),
-            } as Tour
+            } as Tour;
           }
         } catch (error) {
-          console.error("Error fetching tour:", error)
+          console.error("Error fetching tour:", error);
         }
       }
 
@@ -77,44 +77,44 @@ export default function BookingDetailPage() {
         updatedAt: data.updatedAt?.toDate?.() || new Date(),
         user,
         tour,
-      } as Booking)
+      } as Booking);
     } catch (error) {
-      console.error("Error loading booking:", error)
-      alert("Ошибка загрузки бронирования")
+      console.error("Error loading booking:", error);
+      alert("Ошибка загрузки бронирования");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "confirmed":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "pending":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800";
       case "cancelled":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       case "completed":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       default:
-        return "bg-slate-100 text-slate-800"
+        return "bg-slate-100 text-slate-800";
     }
-  }
+  };
 
   const getStatusText = (status: string) => {
     switch (status) {
       case "confirmed":
-        return "Подтверждено"
+        return "Подтверждено";
       case "pending":
-        return "В ожидании"
+        return "В ожидании";
       case "cancelled":
-        return "Отменено"
+        return "Отменено";
       case "completed":
-        return "Завершено"
+        return "Завершено";
       default:
-        return status
+        return status;
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -123,7 +123,7 @@ export default function BookingDetailPage() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
         </div>
       </AdminLayout>
-    )
+    );
   }
 
   if (!booking) {
@@ -133,7 +133,7 @@ export default function BookingDetailPage() {
           <p className="text-slate-500">Бронирование не найдено</p>
         </div>
       </AdminLayout>
-    )
+    );
   }
 
   return (
@@ -148,38 +148,58 @@ export default function BookingDetailPage() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Детали бронирования</h1>
-            <p className="text-slate-500 mt-1">Информация о бронировании и пользователе</p>
+            <h1 className="text-3xl font-bold text-slate-900">
+              Детали бронирования
+            </h1>
+            <p className="text-slate-500 mt-1">
+              Информация о бронировании и пользователе
+            </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Booking Information */}
           <div className="bg-white rounded-lg border border-slate-200 p-6">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">Информация о бронировании</h2>
+            <h2 className="text-xl font-semibold text-slate-900 mb-4">
+              Информация о бронировании
+            </h2>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-slate-600">ID бронирования</label>
+                <label className="text-sm font-medium text-slate-600">
+                  ID бронирования
+                </label>
                 <p className="text-slate-900 mt-1">{booking.id}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-600">Статус</label>
+                <label className="text-sm font-medium text-slate-600">
+                  Статус
+                </label>
                 <p className="mt-1">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${getStatusColor(booking.status)}`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${getStatusColor(booking.status)}`}
+                  >
                     {getStatusText(booking.status)}
                   </span>
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-600">Количество человек</label>
+                <label className="text-sm font-medium text-slate-600">
+                  Количество человек
+                </label>
                 <p className="text-slate-900 mt-1">{booking.numberOfPeople}</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-600">Общая цена</label>
-                <p className="text-slate-900 mt-1 font-semibold">{booking.totalPrice}</p>
+                <label className="text-sm font-medium text-slate-600">
+                  Общая цена
+                </label>
+                <p className="text-slate-900 mt-1 font-semibold">
+                  {booking.totalPrice}
+                </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-slate-600">Дата бронирования</label>
+                <label className="text-sm font-medium text-slate-600">
+                  Дата бронирования
+                </label>
                 <p className="text-slate-900 mt-1">
                   {booking.bookingDate.toLocaleDateString("ru-RU", {
                     year: "numeric",
@@ -192,7 +212,9 @@ export default function BookingDetailPage() {
               </div>
               {booking.travelDate && (
                 <div>
-                  <label className="text-sm font-medium text-slate-600">Дата поездки</label>
+                  <label className="text-sm font-medium text-slate-600">
+                    Дата поездки
+                  </label>
                   <p className="text-slate-900 mt-1">
                     {booking.travelDate.toLocaleDateString("ru-RU", {
                       year: "numeric",
@@ -204,12 +226,16 @@ export default function BookingDetailPage() {
               )}
               {booking.notes && (
                 <div>
-                  <label className="text-sm font-medium text-slate-600">Примечания</label>
+                  <label className="text-sm font-medium text-slate-600">
+                    Примечания
+                  </label>
                   <p className="text-slate-900 mt-1">{booking.notes}</p>
                 </div>
               )}
               <div>
-                <label className="text-sm font-medium text-slate-600">Дата создания</label>
+                <label className="text-sm font-medium text-slate-600">
+                  Дата создания
+                </label>
                 <p className="text-slate-900 mt-1">
                   {booking.createdAt.toLocaleDateString("ru-RU", {
                     year: "numeric",
@@ -220,12 +246,132 @@ export default function BookingDetailPage() {
                   })}
                 </p>
               </div>
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Способ связи
+                </label>
+                <p className="text-slate-900 mt-1">
+                  {booking.contactMethod ?? "-"}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Email
+                </label>
+                <p className="text-slate-900 mt-1">
+                  {booking.email ? (
+                    <a
+                      href={`mailto:${booking.email}`}
+                      className="text-blue-600 underline"
+                    >
+                      {booking.email}
+                    </a>
+                  ) : (
+                    "-"
+                  )}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Телефон
+                </label>
+                <p className="text-slate-900 mt-1">
+                  {booking.phone ? (
+                    <a
+                      href={`https://wa.me/${booking.phone.replace(/[^0-9]/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      {booking.phone}
+                    </a>
+                  ) : (
+                    "-"
+                  )}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Telegram/WhatsApp
+                </label>
+                <p className="text-slate-900 mt-1">
+                  {booking.whatsappTelegram ? (
+                    <a
+                      href={`https://t.me/${booking.whatsappTelegram.replace(/^@/, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      {booking.whatsappTelegram}
+                    </a>
+                  ) : (
+                    "-"
+                  )}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Комментарий
+                </label>
+                <p className="text-slate-900 mt-1">{booking.comment ?? "-"}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Цена за человека
+                </label>
+                <p className="text-slate-900 mt-1">
+                  {typeof booking.pricePerPerson === "number" ||
+                  typeof booking.pricePerPerson === "string"
+                    ? booking.pricePerPerson
+                    : "-"}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Дата начала
+                </label>
+                <p className="text-slate-900 mt-1">
+                  {booking.startDate
+                    ? typeof booking.startDate === "string"
+                      ? booking.startDate
+                      : (booking.startDate.toLocaleString?.("ru-RU") ?? "-")
+                    : "-"}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Дата окончания
+                </label>
+                <p className="text-slate-900 mt-1">
+                  {booking.endDate
+                    ? typeof booking.endDate === "string"
+                      ? booking.endDate
+                      : (booking.endDate.toLocaleString?.("ru-RU") ?? "-")
+                    : "-"}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  ID тура
+                </label>
+                <p className="text-slate-900 mt-1">{booking.tourId ?? "-"}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-600">
+                  Имя
+                </label>
+                <p className="text-slate-900 mt-1">
+                  {booking.name ?? booking.user?.name ?? "-"}
+                </p>
+              </div>
             </div>
           </div>
 
           {/* User Information */}
           <div className="bg-white rounded-lg border border-slate-200 p-6">
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">Информация о пользователе</h2>
+            <h2 className="text-xl font-semibold text-slate-900 mb-4">
+              Информация о пользователе
+            </h2>
             {booking.user ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
@@ -241,20 +387,30 @@ export default function BookingDetailPage() {
                     </div>
                   )}
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900">{booking.user.name}</h3>
+                    <h3 className="text-lg font-semibold text-slate-900">
+                      {booking.user.name}
+                    </h3>
                     <p className="text-slate-600">{booking.user.email}</p>
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-600">ID пользователя</label>
+                  <label className="text-sm font-medium text-slate-600">
+                    ID пользователя
+                  </label>
                   <p className="text-slate-900 mt-1">{booking.user.id}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-600">Роль</label>
-                  <p className="text-slate-900 mt-1 capitalize">{booking.user.role}</p>
+                  <label className="text-sm font-medium text-slate-600">
+                    Роль
+                  </label>
+                  <p className="text-slate-900 mt-1 capitalize">
+                    {booking.user.role}
+                  </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-600">Дата регистрации</label>
+                  <label className="text-sm font-medium text-slate-600">
+                    Дата регистрации
+                  </label>
                   <p className="text-slate-900 mt-1">
                     {booking.user.createdAt.toLocaleDateString("ru-RU", {
                       year: "numeric",
@@ -265,45 +421,72 @@ export default function BookingDetailPage() {
                 </div>
               </div>
             ) : (
-              <p className="text-slate-500">Информация о пользователе не найдена</p>
+              <p className="text-slate-500">
+                Информация о пользователе не найдена
+              </p>
             )}
           </div>
 
           {/* Tour Information */}
           {booking.tour && (
             <div className="bg-white rounded-lg border border-slate-200 p-6 lg:col-span-2">
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">Информация о туре</h2>
+              <h2 className="text-xl font-semibold text-slate-900 mb-4">
+                Информация о туре
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-slate-600">Название тура</label>
-                  <p className="text-slate-900 mt-1">{booking.tour.title?.ru || booking.tour.title?.uz || "Название не указано"}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-600">ID тура</label>
-                  <p className="text-slate-900 mt-1">{booking.tour.id}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-600">Стиль</label>
-                  <p className="text-slate-900 mt-1">{booking.tour.style}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-600">Цена</label>
-                  <p className="text-slate-900 mt-1 font-semibold">{booking.tour.price}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-600">Длительность</label>
+                  <label className="text-sm font-medium text-slate-600">
+                    Название тура
+                  </label>
                   <p className="text-slate-900 mt-1">
-                    {booking.tour.duration.days} дней / {booking.tour.duration.nights} ночей
+                    {booking.tour.title?.ru ||
+                      booking.tour.title?.uz ||
+                      "Название не указано"}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-600">Рейтинг</label>
+                  <label className="text-sm font-medium text-slate-600">
+                    ID тура
+                  </label>
+                  <p className="text-slate-900 mt-1">{booking.tour.id}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-600">
+                    Стиль
+                  </label>
+                  <p className="text-slate-900 mt-1">{booking.tour.style}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-600">
+                    Цена
+                  </label>
+                  <p className="text-slate-900 mt-1 font-semibold">
+                    {booking.tour.price}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-600">
+                    Длительность
+                  </label>
+                  <p className="text-slate-900 mt-1">
+                    {booking.tour.duration.days} дней /{" "}
+                    {booking.tour.duration.nights} ночей
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-600">
+                    Рейтинг
+                  </label>
                   <p className="text-slate-900 mt-1">{booking.tour.rating}</p>
                 </div>
                 {booking.tour.location && (
                   <div>
-                    <label className="text-sm font-medium text-slate-600">Местоположение</label>
-                    <p className="text-slate-900 mt-1">{booking.tour.location.ru || booking.tour.location.uz}</p>
+                    <label className="text-sm font-medium text-slate-600">
+                      Местоположение
+                    </label>
+                    <p className="text-slate-900 mt-1">
+                      {booking.tour.location.ru || booking.tour.location.uz}
+                    </p>
                   </div>
                 )}
               </div>
@@ -312,5 +495,5 @@ export default function BookingDetailPage() {
         </div>
       </div>
     </AdminLayout>
-  )
+  );
 }
