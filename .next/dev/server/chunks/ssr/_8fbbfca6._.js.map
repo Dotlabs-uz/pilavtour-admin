@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///D:/Frontent%20Sardor/Work/Travel%20Project/admin/pilavtour-admin/app/page.tsx"],"sourcesContent":["'use client'\r\n\r\nimport { useEffect } from \"react\";\r\nimport { useRouter } from \"next/navigation\";\r\n\r\nexport default function Home() {\r\n    const router = useRouter();\r\n    useEffect(() => {\r\n        router.push(\"/admin/users\");\r\n    }, [router]);\r\n    return (\r\n        <div>\r\n            <h1>Home</h1>\r\n        </div>\r\n    )\r\n}"],"names":[],"mappings":";;;;;AAEA;AACA;AAHA;;;;AAKe,SAAS;IACpB,MAAM,SAAS,IAAA,+IAAS;IACxB,IAAA,kNAAS,EAAC;QACN,OAAO,IAAI,CAAC;IAChB,GAAG;QAAC;KAAO;IACX,qBACI,8OAAC;kBACG,cAAA,8OAAC;sBAAG;;;;;;;;;;;AAGhB"}},
+    {"offset": {"line": 40, "column": 0}, "map": {"version":3,"sources":["file:///D:/Frontent%20Sardor/Work/Travel%20Project/admin/pilavtour-admin/node_modules/next/src/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.ts"],"sourcesContent":["module.exports = (\n  require('../../module.compiled') as typeof import('../../module.compiled')\n).vendored['react-ssr']!.ReactJsxDevRuntime\n"],"names":["module","exports","require","vendored","ReactJsxDevRuntime"],"mappings":"AAAAA,OAAOC,OAAO,GACZC,QAAQ,4HACRC,QAAQ,CAAC,YAAY,CAAEC,kBAAkB","ignoreList":[0]}}]
+}

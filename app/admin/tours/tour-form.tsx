@@ -1,37 +1,49 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useEffect, useState } from "react"
-import { useForm, useFieldArray } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { tourSchema, type TourFormData } from "@/schemas/tour-schema"
-import { getFirebaseServices } from "@/lib/firebase"
-import { collection, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { LANGUAGES, type MultiLangText } from "@/types"
-import { useRouter } from "next/navigation"
-import { Trash2, Plus, Calendar } from "lucide-react"
-import { onAuthStateChanged } from "firebase/auth"
-import { translateText } from "@/lib/translation"
-import { Slider } from "@/components/ui/slider"
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
-import { BasicHtmlEditor } from "@/components/basic-html-editor"
+import { useEffect, useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { tourSchema, type TourFormData } from "@/schemas/tour-schema";
+import { getFirebaseServices } from "@/lib/firebase";
+import {
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { LANGUAGES, type MultiLangText } from "@/types";
+import { useRouter } from "next/navigation";
+import { Trash2, Plus, Calendar } from "lucide-react";
+import { onAuthStateChanged } from "firebase/auth";
+import { translateText } from "@/lib/translation";
+import { Slider } from "@/components/ui/slider";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import { BasicHtmlEditor } from "@/components/basic-html-editor";
 
 const toDateInputValue = (value?: Date | string | null) => {
-  if (!value) return ""
-  const date = value instanceof Date ? value : new Date(value)
-  return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10)
-}
+  if (!value) return "";
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
+};
 
 interface TourFormProps {
-  tourId?: string
+  tourId?: string;
 }
 
 export function TourForm({ tourId }: TourFormProps) {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(!!tourId)
-  const [uploadingImages, setUploadingImages] = useState(false)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(!!tourId);
+  const [uploadingImages, setUploadingImages] = useState(false);
   const {
     control,
     register,
@@ -46,115 +58,226 @@ export function TourForm({ tourId }: TourFormProps) {
     defaultValues: {
       physicalRating: 5,
     },
-  })
+  });
 
-  const images = watch("images") || []
-  const itinerary = watch("itinerary") || []
-  const itineraryImage = watch("itineraryImage") || ""
-  const inclusions = watch("inclusions") || { included: [], notIncluded: [] }
-  const physicalRating = watch("physicalRating") ?? 5
-  const destinations = watch("destinations") || []
-  const meals = watch("meals") || ""
-  const transport = watch("transport") || ""
-  const accommodation = watch("accommodation") || ""
-  const premiumInclusions = watch("premiumInclusions") || []
-  const includedActivities = watch("includedActivities") || []
-  const optionalActivities = watch("optionalActivities") || []
-  const isThisTripRightForYou = watch("isThisTripRightForYou") || ""
-  const accommodationRichText = watch("accommodationRichText") || ""
-  const joiningPoint = watch("joiningPoint") || ""
+  const images = watch("images") || [];
+  const itinerary = watch("itinerary") || [];
+  const itineraryImage = watch("itineraryImage") || "";
+  const inclusions = watch("inclusions") || { included: [], notIncluded: [] };
+  const physicalRating = watch("physicalRating") ?? 5;
+  const destinations = watch("destinations") || [];
+  const meals = watch("meals") || "";
+  const transport = watch("transport") || "";
+  const accommodation = watch("accommodation") || "";
+  const premiumInclusions = watch("premiumInclusions") || [];
+  const includedActivities = watch("includedActivities") || [];
+  const optionalActivities = watch("optionalActivities") || [];
+  const isThisTripRightForYou = watch("isThisTripRightForYou") || "";
+  const accommodationRichText = watch("accommodationRichText") || "";
+  const joiningPoint = watch("joiningPoint") || "";
 
-  const { fields: dateFields, append: appendDate, remove: removeDate } = useFieldArray({
+  const {
+    fields: dateFields,
+    append: appendDate,
+    remove: removeDate,
+  } = useFieldArray({
     control,
     name: "dates",
-  })
+  });
 
   useEffect(() => {
     if (tourId) {
-      loadTour()
+      loadTour();
     }
-  }, [tourId])
+  }, [tourId]);
 
   const loadTour = async () => {
     try {
-      const { db } = getFirebaseServices()
-      const tourDoc = await getDoc(doc(db!, "tours", tourId!))
+      const { db } = getFirebaseServices();
+      const tourDoc = await getDoc(doc(db!, "tours", tourId!));
 
       if (tourDoc.exists()) {
-        const data = tourDoc.data()
+        const data = tourDoc.data();
         // Load with Russian title/description as default (or first available)
         const normalizeDates =
           data.dates?.map((d: any) => ({
-            startDate: toDateInputValue(d?.startDate?.toDate ? d.startDate.toDate() : d?.startDate) || "",
-            endDate: toDateInputValue(d?.endDate?.toDate ? d.endDate.toDate() : d?.endDate) || "",
+            startDate:
+              toDateInputValue(
+                d?.startDate?.toDate ? d.startDate.toDate() : d?.startDate,
+              ) || "",
+            endDate:
+              toDateInputValue(
+                d?.endDate?.toDate ? d.endDate.toDate() : d?.endDate,
+              ) || "",
             status: d?.status || "Available",
             price: d?.price || "",
-          })) || []
+          })) || [];
 
         // Normalize itinerary to use Russian (or first available) language
         const normalizeItinerary =
           data.itinerary?.map((item: any) => ({
-            title: item.title?.ru || item.title?.en || item.title?.uz || (typeof item.title === "string" ? item.title : ""),
-            description: item.description?.ru || item.description?.en || item.description?.uz || (typeof item.description === "string" ? item.description : ""),
-            accommodation: item.accommodation?.map((acc: any) => typeof acc === "string" ? acc : acc?.ru || acc?.en || acc?.uz || "") || [],
-            meals: item.meals?.map((meal: any) => typeof meal === "string" ? meal : meal?.ru || meal?.en || meal?.uz || "") || [],
-            includedActivities: item.includedActivities?.map((act: any) => typeof act === "string" ? act : act?.ru || act?.en || act?.uz || "") || [],
-            optionalActivities: item.optionalActivities?.map((act: any) => typeof act === "string" ? act : act?.ru || act?.en || act?.uz || "") || [],
-            specialInformation: item.specialInformation?.ru || item.specialInformation?.en || item.specialInformation?.uz || (typeof item.specialInformation === "string" ? item.specialInformation : ""),
-          })) || []
+            title:
+              item.title?.ru ||
+              item.title?.en ||
+              item.title?.uz ||
+              (typeof item.title === "string" ? item.title : ""),
+            description:
+              item.description?.ru ||
+              item.description?.en ||
+              item.description?.uz ||
+              (typeof item.description === "string" ? item.description : ""),
+            accommodation:
+              item.accommodation?.map((acc: any) =>
+                typeof acc === "string"
+                  ? acc
+                  : acc?.ru || acc?.en || acc?.uz || "",
+              ) || [],
+            meals:
+              item.meals?.map((meal: any) =>
+                typeof meal === "string"
+                  ? meal
+                  : meal?.ru || meal?.en || meal?.uz || "",
+              ) || [],
+            includedActivities:
+              item.includedActivities?.map((act: any) =>
+                typeof act === "string"
+                  ? act
+                  : act?.ru || act?.en || act?.uz || "",
+              ) || [],
+            optionalActivities:
+              item.optionalActivities?.map((act: any) =>
+                typeof act === "string"
+                  ? act
+                  : act?.ru || act?.en || act?.uz || "",
+              ) || [],
+            specialInformation:
+              item.specialInformation?.ru ||
+              item.specialInformation?.en ||
+              item.specialInformation?.uz ||
+              (typeof item.specialInformation === "string"
+                ? item.specialInformation
+                : ""),
+          })) || [];
 
         // Normalize inclusions to use Russian (or first available) language
         const normalizeIncluded =
           data.inclusions?.included?.map((item: any) =>
-            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
-          ) || []
+            typeof item === "string"
+              ? item
+              : item?.ru || item?.en || item?.uz || "",
+          ) || [];
         const normalizeNotIncluded =
           data.inclusions?.notIncluded?.map((item: any) =>
-            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
-          ) || []
+            typeof item === "string"
+              ? item
+              : item?.ru || item?.en || item?.uz || "",
+          ) || [];
 
         // Normalize new fields
         const normalizeDestinations =
           data.destinations?.map((item: any) =>
-            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
-          ) || []
-        const normalizeMeals = typeof data.meals === "string" ? data.meals : data.meals?.ru || data.meals?.en || data.meals?.uz || ""
-        const normalizeTransport = typeof data.transport === "string" ? data.transport : data.transport?.ru || data.transport?.en || data.transport?.uz || ""
-        const normalizeAccommodation = typeof data.accommodation === "string" ? data.accommodation : data.accommodation?.ru || data.accommodation?.en || data.accommodation?.uz || ""
+            typeof item === "string"
+              ? item
+              : item?.ru || item?.en || item?.uz || "",
+          ) || [];
+        const normalizeMeals =
+          typeof data.meals === "string"
+            ? data.meals
+            : data.meals?.ru || data.meals?.en || data.meals?.uz || "";
+        const normalizeTransport =
+          typeof data.transport === "string"
+            ? data.transport
+            : data.transport?.ru ||
+              data.transport?.en ||
+              data.transport?.uz ||
+              "";
+        const normalizeAccommodation =
+          typeof data.accommodation === "string"
+            ? data.accommodation
+            : data.accommodation?.ru ||
+              data.accommodation?.en ||
+              data.accommodation?.uz ||
+              "";
         const normalizePremiumInclusions =
           data.premiumInclusions?.map((item: any) =>
-            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
-          ) || []
+            typeof item === "string"
+              ? item
+              : item?.ru || item?.en || item?.uz || "",
+          ) || [];
         const normalizeIncludedActivities =
           data.includedActivities?.map((item: any) =>
-            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
-          ) || []
+            typeof item === "string"
+              ? item
+              : item?.ru || item?.en || item?.uz || "",
+          ) || [];
         const normalizeOptionalActivities =
           data.optionalActivities?.map((item: any) =>
-            typeof item === "string" ? item : item?.ru || item?.en || item?.uz || ""
-          ) || []
-        const normalizeIsThisTripRightForYou = typeof data.isThisTripRightForYou === "string" ? data.isThisTripRightForYou : data.isThisTripRightForYou?.ru || data.isThisTripRightForYou?.en || data.isThisTripRightForYou?.uz || ""
-        const normalizeAccommodationRichText = typeof data.accommodationRichText === "string" ? data.accommodationRichText : data.accommodationRichText?.ru || data.accommodationRichText?.en || data.accommodationRichText?.uz || ""
-        const normalizeJoiningPoint = typeof data.joiningPoint === "string" ? data.joiningPoint : data.joiningPoint?.ru || data.joiningPoint?.en || data.joiningPoint?.uz || ""
+            typeof item === "string"
+              ? item
+              : item?.ru || item?.en || item?.uz || "",
+          ) || [];
+        const normalizeIsThisTripRightForYou =
+          typeof data.isThisTripRightForYou === "string"
+            ? data.isThisTripRightForYou
+            : data.isThisTripRightForYou?.ru ||
+              data.isThisTripRightForYou?.en ||
+              data.isThisTripRightForYou?.uz ||
+              "";
+        const normalizeAccommodationRichText =
+          typeof data.accommodationRichText === "string"
+            ? data.accommodationRichText
+            : data.accommodationRichText?.ru ||
+              data.accommodationRichText?.en ||
+              data.accommodationRichText?.uz ||
+              "";
+        const normalizeJoiningPoint =
+          typeof data.joiningPoint === "string"
+            ? data.joiningPoint
+            : data.joiningPoint?.ru ||
+              data.joiningPoint?.en ||
+              data.joiningPoint?.uz ||
+              "";
 
         reset({
           name: data.name?.ru || data.name?.en || data.name?.uz || "",
           title: data.title?.ru || data.title?.en || data.title?.uz || "",
-          description: data.description?.ru || data.description?.en || data.description?.uz || "",
+          description:
+            data.description?.ru ||
+            data.description?.en ||
+            data.description?.uz ||
+            "",
           price: data.price || "",
           style: data.style || "Standart",
           duration: data.duration || { days: 1, nights: 0 },
-          groupSize: typeof data.groupSize === "string" ? data.groupSize : data.groupSize?.ru || data.groupSize?.en || data.groupSize?.uz || "",
+          groupSize:
+            typeof data.groupSize === "string"
+              ? data.groupSize
+              : data.groupSize?.ru ||
+                data.groupSize?.en ||
+                data.groupSize?.uz ||
+                "",
           start: data.start || "",
           end: data.end || "",
-          theme: typeof data.theme === "string" ? data.theme : data.theme?.ru || data.theme?.en || data.theme?.uz || "",
+          theme:
+            typeof data.theme === "string"
+              ? data.theme
+              : data.theme?.ru || data.theme?.en || data.theme?.uz || "",
           physicalRating: data.physicalRating || undefined,
           images: data.images || [],
           itineraryImage: data.itineraryImage || "",
           itinerary: normalizeItinerary,
           dates: normalizeDates,
-          inclusions: { included: normalizeIncluded, notIncluded: normalizeNotIncluded },
-          location: typeof data.location === "string" ? data.location : data.location?.ru || data.location?.en || data.location?.uz || "",
+          inclusions: {
+            included: normalizeIncluded,
+            notIncluded: normalizeNotIncluded,
+          },
+          location:
+            typeof data.location === "string"
+              ? data.location
+              : data.location?.ru ||
+                data.location?.en ||
+                data.location?.uz ||
+                "",
           destinations: normalizeDestinations,
           meals: normalizeMeals,
           transport: normalizeTransport,
@@ -165,73 +288,80 @@ export function TourForm({ tourId }: TourFormProps) {
           isThisTripRightForYou: normalizeIsThisTripRightForYou,
           accommodationRichText: normalizeAccommodationRichText,
           joiningPoint: normalizeJoiningPoint,
-        })
+        });
       }
     } catch (error) {
-      console.error("Error loading tour:", error)
+      console.error("Error loading tour:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files) return
+    const files = e.target.files;
+    if (!files) return;
 
-    setUploadingImages(true)
+    setUploadingImages(true);
     try {
-      const { storage, auth } = getFirebaseServices()
+      const { storage, auth } = getFirebaseServices();
 
       if (!auth?.currentUser) {
         await new Promise<void>((resolve, reject) => {
           const timeout = setTimeout(() => {
-            unsubscribe()
-            reject(new Error("Таймаут ожидания авторизации"))
-          }, 5000)
+            unsubscribe();
+            reject(new Error("Таймаут ожидания авторизации"));
+          }, 5000);
 
           const unsubscribe = onAuthStateChanged(auth!, (user) => {
-            clearTimeout(timeout)
-            unsubscribe()
+            clearTimeout(timeout);
+            unsubscribe();
             if (user) {
-              resolve()
+              resolve();
             } else {
-              reject(new Error("Пользователь не авторизован. Пожалуйста, войдите снова."))
+              reject(
+                new Error(
+                  "Пользователь не авторизован. Пожалуйста, войдите снова.",
+                ),
+              );
             }
-          })
-        })
+          });
+        });
       }
 
       if (auth?.currentUser) {
         try {
-          await auth.currentUser.getIdToken(true)
+          await auth.currentUser.getIdToken(true);
         } catch (tokenError) {
-          console.error("Error refreshing token:", tokenError)
-          throw new Error("Ошибка обновления токена авторизации")
+          console.error("Error refreshing token:", tokenError);
+          throw new Error("Ошибка обновления токена авторизации");
         }
       }
 
-      const uploadedUrls: string[] = []
+      const uploadedUrls: string[] = [];
 
       for (const file of Array.from(files)) {
-        const storageRef = ref(storage!, `tours/${tourId || "new"}/${Date.now()}-${file.name}`)
-        await uploadBytes(storageRef, file)
-        const url = await getDownloadURL(storageRef)
-        uploadedUrls.push(url)
+        const storageRef = ref(
+          storage!,
+          `tours/${tourId || "new"}/${Date.now()}-${file.name}`,
+        );
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        uploadedUrls.push(url);
       }
 
-      const currentImages = getValues("images") || []
+      const currentImages = getValues("images") || [];
       reset({
         ...getValues(),
         images: [...currentImages, ...uploadedUrls],
-      })
+      });
     } catch (error: any) {
-      console.error("Error uploading images:", error)
-      const errorMessage = error.message || "Не удалось загрузить изображения"
-      alert(errorMessage)
+      console.error("Error uploading images:", error);
+      const errorMessage = error.message || "Не удалось загрузить изображения";
+      alert(errorMessage);
     } finally {
-      setUploadingImages(false)
+      setUploadingImages(false);
     }
-  }
+  };
 
   const getEmptyMultiLang = (): MultiLangText => {
     return {
@@ -242,49 +372,82 @@ export function TourForm({ tourId }: TourFormProps) {
       uk: "",
       it: "",
       ge: "",
-    }
-  }
+    };
+  };
 
   const onSubmit = async (data: TourFormData) => {
     try {
-      const emptyMultiLang = getEmptyMultiLang()
-      
+      const emptyMultiLang = getEmptyMultiLang();
+
       // Translate name, title and description to all languages (only if provided)
-      const [translatedName, translatedTitle, translatedDescription] = await Promise.all([
-        data.name ? translateText(data.name, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
-        data.title ? translateText(data.title, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
-        data.description ? translateText(data.description, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
-      ])
+      const [translatedName, translatedTitle, translatedDescription] =
+        await Promise.all([
+          data.name
+            ? translateText(data.name, [...LANGUAGES])
+            : Promise.resolve(emptyMultiLang),
+          data.title
+            ? translateText(data.title, [...LANGUAGES])
+            : Promise.resolve(emptyMultiLang),
+          data.description
+            ? translateText(data.description, [...LANGUAGES])
+            : Promise.resolve(emptyMultiLang),
+        ]);
 
       // Translate itinerary items
       const translatedItinerary = await Promise.all(
         (data.itinerary || []).map(async (item) => {
-          const [translatedTitle, translatedDescription, translatedSpecialInfo] = await Promise.all([
-            item.title ? translateText(item.title, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
-            item.description ? translateText(item.description, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
-            item.specialInformation ? translateText(item.specialInformation, [...LANGUAGES]) : Promise.resolve(emptyMultiLang),
-          ])
-          
+          const [
+            translatedTitle,
+            translatedDescription,
+            translatedSpecialInfo,
+          ] = await Promise.all([
+            item.title
+              ? translateText(item.title, [...LANGUAGES])
+              : Promise.resolve(emptyMultiLang),
+            item.description
+              ? translateText(item.description, [...LANGUAGES])
+              : Promise.resolve(emptyMultiLang),
+            item.specialInformation
+              ? translateText(item.specialInformation, [...LANGUAGES])
+              : Promise.resolve(emptyMultiLang),
+          ]);
+
           // Translate accommodation array
           const translatedAccommodation = await Promise.all(
-            (item.accommodation || []).map((acc: string | undefined) => acc ? translateText(acc, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
-          )
-          
+            (item.accommodation || []).map((acc: string | undefined) =>
+              acc
+                ? translateText(acc, [...LANGUAGES])
+                : Promise.resolve(emptyMultiLang),
+            ),
+          );
+
           // Translate meals array
           const translatedMeals = await Promise.all(
-            (item.meals || []).map((meal: string | undefined) => meal ? translateText(meal, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
-          )
-          
+            (item.meals || []).map((meal: string | undefined) =>
+              meal
+                ? translateText(meal, [...LANGUAGES])
+                : Promise.resolve(emptyMultiLang),
+            ),
+          );
+
           // Translate included activities array
           const translatedIncludedActivities = await Promise.all(
-            (item.includedActivities || []).map((act: string | undefined) => act ? translateText(act, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
-          )
-          
+            (item.includedActivities || []).map((act: string | undefined) =>
+              act
+                ? translateText(act, [...LANGUAGES])
+                : Promise.resolve(emptyMultiLang),
+            ),
+          );
+
           // Translate optional activities array
           const translatedOptionalActivities = await Promise.all(
-            (item.optionalActivities || []).map((act: string | undefined) => act ? translateText(act, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
-          )
-          
+            (item.optionalActivities || []).map((act: string | undefined) =>
+              act
+                ? translateText(act, [...LANGUAGES])
+                : Promise.resolve(emptyMultiLang),
+            ),
+          );
+
           return {
             title: translatedTitle,
             description: translatedDescription,
@@ -293,79 +456,129 @@ export function TourForm({ tourId }: TourFormProps) {
             includedActivities: translatedIncludedActivities,
             optionalActivities: translatedOptionalActivities,
             specialInformation: translatedSpecialInfo,
-          }
-        })
-      )
+          };
+        }),
+      );
 
       // Translate inclusions
       const translatedIncluded = await Promise.all(
-        (data.inclusions?.included || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
-      )
+        (data.inclusions?.included || []).map((item) =>
+          item
+            ? translateText(item, [...LANGUAGES])
+            : Promise.resolve(emptyMultiLang),
+        ),
+      );
       const translatedNotIncluded = await Promise.all(
-        (data.inclusions?.notIncluded || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
-      )
+        (data.inclusions?.notIncluded || []).map((item) =>
+          item
+            ? translateText(item, [...LANGUAGES])
+            : Promise.resolve(emptyMultiLang),
+        ),
+      );
 
-      // Translate location, theme and groupSize
-      const translatedLocation = data.location ? await translateText(data.location, [...LANGUAGES]) : undefined
-      const translatedTheme = data.theme ? await translateText(data.theme, [...LANGUAGES]) : undefined
-      const translatedGroupSize = data.groupSize ? await translateText(data.groupSize, [...LANGUAGES]) : undefined
+      // Translate location, theme, groupSize and category
+      const translatedLocation = data.location
+        ? await translateText(data.location, [...LANGUAGES])
+        : undefined;
+      const translatedTheme = data.theme
+        ? await translateText(data.theme, [...LANGUAGES])
+        : undefined;
+      const translatedGroupSize = data.groupSize
+        ? await translateText(data.groupSize, [...LANGUAGES])
+        : undefined;
+      // category перевод не нужен
+      const category = data.category || "";
 
       // Translate new fields
       const translatedDestinations = await Promise.all(
-        (data.destinations || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
-      )
-      const translatedMeals = data.meals ? await translateText(data.meals, [...LANGUAGES]) : undefined
-      const translatedTransport = data.transport ? await translateText(data.transport, [...LANGUAGES]) : undefined
-      const translatedAccommodation = data.accommodation ? await translateText(data.accommodation, [...LANGUAGES]) : undefined
+        (data.destinations || []).map((item) =>
+          item
+            ? translateText(item, [...LANGUAGES])
+            : Promise.resolve(emptyMultiLang),
+        ),
+      );
+      const translatedMeals = data.meals
+        ? await translateText(data.meals, [...LANGUAGES])
+        : undefined;
+      const translatedTransport = data.transport
+        ? await translateText(data.transport, [...LANGUAGES])
+        : undefined;
+      const translatedAccommodation = data.accommodation
+        ? await translateText(data.accommodation, [...LANGUAGES])
+        : undefined;
       const translatedPremiumInclusions = await Promise.all(
-        (data.premiumInclusions || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
-      )
+        (data.premiumInclusions || []).map((item) =>
+          item
+            ? translateText(item, [...LANGUAGES])
+            : Promise.resolve(emptyMultiLang),
+        ),
+      );
       const translatedIncludedActivities = await Promise.all(
-        (data.includedActivities || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
-      )
+        (data.includedActivities || []).map((item) =>
+          item
+            ? translateText(item, [...LANGUAGES])
+            : Promise.resolve(emptyMultiLang),
+        ),
+      );
       const translatedOptionalActivities = await Promise.all(
-        (data.optionalActivities || []).map((item) => item ? translateText(item, [...LANGUAGES]) : Promise.resolve(emptyMultiLang))
-      )
+        (data.optionalActivities || []).map((item) =>
+          item
+            ? translateText(item, [...LANGUAGES])
+            : Promise.resolve(emptyMultiLang),
+        ),
+      );
 
       // Translate new rich text fields (HTML content will be preserved by Google Translate)
-      const translatedIsThisTripRightForYou = data.isThisTripRightForYou ? await translateText(data.isThisTripRightForYou, [...LANGUAGES]) : undefined
-      const translatedAccommodationRichText = data.accommodationRichText ? await translateText(data.accommodationRichText, [...LANGUAGES]) : undefined
-      const translatedJoiningPoint = data.joiningPoint ? await translateText(data.joiningPoint, [...LANGUAGES]) : undefined
+      const translatedIsThisTripRightForYou = data.isThisTripRightForYou
+        ? await translateText(data.isThisTripRightForYou, [...LANGUAGES])
+        : undefined;
+      const translatedAccommodationRichText = data.accommodationRichText
+        ? await translateText(data.accommodationRichText, [...LANGUAGES])
+        : undefined;
+      const translatedJoiningPoint = data.joiningPoint
+        ? await translateText(data.joiningPoint, [...LANGUAGES])
+        : undefined;
 
       // Convert date strings to Date objects for Firestore
-      const normalizedDates = (data.dates || [])
-        .map((date) => {
-          const startDate = date.startDate 
-            ? (typeof date.startDate === "string" && date.startDate ? new Date(date.startDate) : date.startDate instanceof Date ? date.startDate : null)
-            : null
-          const endDate = date.endDate 
-            ? (typeof date.endDate === "string" && date.endDate ? new Date(date.endDate) : date.endDate instanceof Date ? date.endDate : null)
-            : null
-          return {
-            startDate,
-            endDate,
-            status: date.status || "Available",
-            price: date.price || "",
-          }
-        })
-        .filter((date) => date.startDate && date.endDate && !isNaN(date.startDate.getTime()) && !isNaN(date.endDate.getTime())) // Only include valid dates with both start and end
+      const normalizedDates = (data.dates || []).map((date) => {
+        const startDate = date.startDate
+          ? typeof date.startDate === "string" && date.startDate
+            ? new Date(date.startDate)
+            : date.startDate instanceof Date
+              ? date.startDate
+              : null
+          : null;
+        const endDate = date.endDate
+          ? typeof date.endDate === "string" && date.endDate
+            ? new Date(date.endDate)
+            : date.endDate instanceof Date
+              ? date.endDate
+              : null
+          : null;
+        return {
+          startDate,
+          endDate,
+          status: date.status || "Available",
+          price: date.price || "",
+        };
+      });
 
-      const { db } = getFirebaseServices()
-      
+      const { db } = getFirebaseServices();
+
       // Helper function to remove undefined values
       const removeUndefined = (obj: any): any => {
-        if (obj === null || obj === undefined) return null
-        if (Array.isArray(obj)) return obj.map(removeUndefined)
-        if (typeof obj !== 'object') return obj
-        
-        const cleaned: any = {}
+        if (obj === null || obj === undefined) return null;
+        if (Array.isArray(obj)) return obj.map(removeUndefined);
+        if (typeof obj !== "object") return obj;
+
+        const cleaned: any = {};
         for (const [key, value] of Object.entries(obj)) {
           if (value !== undefined) {
-            cleaned[key] = removeUndefined(value)
+            cleaned[key] = removeUndefined(value);
           }
         }
-        return cleaned
-      }
+        return cleaned;
+      };
 
       const tourData = removeUndefined({
         name: translatedName,
@@ -373,6 +586,7 @@ export function TourForm({ tourId }: TourFormProps) {
         description: translatedDescription,
         price: data.price || "",
         style: data.style || "Standart",
+        category,
         duration: data.duration || { days: 1, nights: 0 },
         groupSize: translatedGroupSize,
         start: data.start || "",
@@ -383,45 +597,59 @@ export function TourForm({ tourId }: TourFormProps) {
         itineraryImage: data.itineraryImage || "",
         itinerary: translatedItinerary,
         dates: normalizedDates.length > 0 ? normalizedDates : undefined,
-        inclusions: data.inclusions ? {
-          included: translatedIncluded,
-          notIncluded: translatedNotIncluded,
-        } : undefined,
+        inclusions: data.inclusions
+          ? {
+              included: translatedIncluded,
+              notIncluded: translatedNotIncluded,
+            }
+          : undefined,
         location: translatedLocation,
-        destinations: translatedDestinations.length > 0 ? translatedDestinations : undefined,
+        destinations:
+          translatedDestinations.length > 0
+            ? translatedDestinations
+            : undefined,
         meals: translatedMeals,
         transport: translatedTransport,
         accommodation: translatedAccommodation,
-        premiumInclusions: translatedPremiumInclusions.length > 0 ? translatedPremiumInclusions : undefined,
-        includedActivities: translatedIncludedActivities.length > 0 ? translatedIncludedActivities : undefined,
-        optionalActivities: translatedOptionalActivities.length > 0 ? translatedOptionalActivities : undefined,
+        premiumInclusions:
+          translatedPremiumInclusions.length > 0
+            ? translatedPremiumInclusions
+            : undefined,
+        includedActivities:
+          translatedIncludedActivities.length > 0
+            ? translatedIncludedActivities
+            : undefined,
+        optionalActivities:
+          translatedOptionalActivities.length > 0
+            ? translatedOptionalActivities
+            : undefined,
         isThisTripRightForYou: translatedIsThisTripRightForYou,
         accommodationRichText: translatedAccommodationRichText,
         joiningPoint: translatedJoiningPoint,
         updatedAt: serverTimestamp(),
         ...(tourId ? {} : { createdAt: serverTimestamp() }),
-      })
+      });
 
       if (tourId) {
-        await updateDoc(doc(db!, "tours", tourId), tourData)
+        await updateDoc(doc(db!, "tours", tourId), tourData);
       } else {
-        const newDocRef = doc(collection(db!, "tours"))
-        await setDoc(newDocRef, tourData)
+        const newDocRef = doc(collection(db!, "tours"));
+        await setDoc(newDocRef, tourData);
       }
 
-      router.push("/admin/tours")
+      router.push("/admin/tours");
     } catch (error) {
-      console.error("Error saving tour:", error)
-      alert("Не удалось сохранить тур")
+      console.error("Error saving tour:", error);
+      alert("Не удалось сохранить тур");
     }
-  }
+  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -430,22 +658,30 @@ export function TourForm({ tourId }: TourFormProps) {
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
         <h2 className="text-lg font-semibold text-slate-900">Название</h2>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Название</label>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Название
+          </label>
           <input
             {...register("name")}
             className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
             placeholder="Введите название (будет автоматически переведено на все языки)"
           />
-          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+          {errors.name && (
+            <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
+          )}
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Заголовок</label>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Заголовок
+          </label>
           <input
             {...register("title")}
             className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
             placeholder="Введите заголовок (будет автоматически переведено на все языки)"
           />
-          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+          {errors.title && (
+            <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>
+          )}
         </div>
       </div>
 
@@ -453,23 +689,35 @@ export function TourForm({ tourId }: TourFormProps) {
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
         <h2 className="text-lg font-semibold text-slate-900">Описание</h2>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Описание тура (будет автоматически переведено на все языки)</label>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Описание тура (будет автоматически переведено на все языки)
+          </label>
           <BasicHtmlEditor
             value={watch("description") || ""}
-            onChange={(html) => setValue("description", html, { shouldValidate: true })}
+            onChange={(html) =>
+              setValue("description", html, { shouldValidate: true })
+            }
             placeholder="Введите описание тура"
             rows={8}
           />
-          {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+          {errors.description && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.description.message}
+            </p>
+          )}
         </div>
       </div>
 
       {/* Basic Info */}
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900">Основная информация</h2>
+        <h2 className="text-lg font-semibold text-slate-900">
+          Основная информация
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Цена</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Цена
+            </label>
             <input
               {...register("price")}
               type="text"
@@ -479,7 +727,9 @@ export function TourForm({ tourId }: TourFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Стиль</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Стиль
+            </label>
             <select
               {...register("style")}
               className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
@@ -492,7 +742,21 @@ export function TourForm({ tourId }: TourFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Дней</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Категория
+            </label>
+            <input
+              {...register("category")}
+              type="text"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+              placeholder="Введите категорию"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Дней
+            </label>
             <input
               {...register("duration.days", { valueAsNumber: true })}
               type="number"
@@ -500,9 +764,13 @@ export function TourForm({ tourId }: TourFormProps) {
               className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Ночей</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Ночей
+            </label>
             <input
               {...register("duration.nights", { valueAsNumber: true })}
               type="number"
@@ -510,11 +778,11 @@ export function TourForm({ tourId }: TourFormProps) {
               className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Размер группы</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Размер группы
+            </label>
             <input
               {...register("groupSize")}
               type="text"
@@ -522,9 +790,13 @@ export function TourForm({ tourId }: TourFormProps) {
               placeholder="Введите размер группы (будет автоматически переведено на все языки)"
             />
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Местоположение</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Местоположение
+            </label>
             <input
               {...register("location")}
               type="text"
@@ -532,11 +804,11 @@ export function TourForm({ tourId }: TourFormProps) {
               placeholder="e.g., Samarkand, Bukhara (будет автоматически переведено на все языки)"
             />
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Начало</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Начало
+            </label>
             <input
               {...register("start")}
               type="text"
@@ -544,9 +816,13 @@ export function TourForm({ tourId }: TourFormProps) {
               placeholder="Введите начало"
             />
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Конец</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Конец
+            </label>
             <input
               {...register("end")}
               type="text"
@@ -554,11 +830,11 @@ export function TourForm({ tourId }: TourFormProps) {
               placeholder="Введите конец"
             />
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Тема</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Тема
+            </label>
             <select
               {...register("theme")}
               className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
@@ -574,14 +850,22 @@ export function TourForm({ tourId }: TourFormProps) {
               <option value="Women's Expeditions">Women's Expeditions</option>
               <option value="Religious Tours">Religious Tours</option>
             </select>
-            {errors.theme && <p className="text-red-500 text-xs mt-1">{errors.theme.message}</p>}
+            {errors.theme && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.theme.message}
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Физическая оценка (1-5): {physicalRating}</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Физическая оценка (1-5): {physicalRating}
+            </label>
             <Slider
               value={[physicalRating]}
-              onValueChange={(values) => setValue("physicalRating", values[0], { shouldValidate: true })}
+              onValueChange={(values) =>
+                setValue("physicalRating", values[0], { shouldValidate: true })
+              }
               min={1}
               max={5}
               step={1}
@@ -594,18 +878,26 @@ export function TourForm({ tourId }: TourFormProps) {
               <span>4</span>
               <span>5</span>
             </div>
-            {errors.physicalRating && <p className="text-red-500 text-xs mt-1">{errors.physicalRating.message}</p>}
+            {errors.physicalRating && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.physicalRating.message}
+              </p>
+            )}
           </div>
         </div>
       </div>
 
       {/* Inclusions and Activities */}
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-slate-900">Включения и активности</h2>
-        
+        <h2 className="text-lg font-semibold text-slate-900">
+          Включения и активности
+        </h2>
+
         {/* Destinations */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-700">Направления</label>
+          <label className="block text-sm font-medium text-slate-700">
+            Направления
+          </label>
           {destinations.map((_, idx) => (
             <div key={idx} className="flex items-center gap-2">
               <input
@@ -616,12 +908,14 @@ export function TourForm({ tourId }: TourFormProps) {
               <button
                 type="button"
                 onClick={() => {
-                  const currentDestinations = getValues("destinations") || []
-                  const newDestinations = currentDestinations.filter((_, i) => i !== idx)
+                  const currentDestinations = getValues("destinations") || [];
+                  const newDestinations = currentDestinations.filter(
+                    (_, i) => i !== idx,
+                  );
                   reset({
                     ...getValues(),
                     destinations: newDestinations,
-                  })
+                  });
                 }}
                 className="text-red-600 hover:text-red-700"
               >
@@ -632,11 +926,11 @@ export function TourForm({ tourId }: TourFormProps) {
           <button
             type="button"
             onClick={() => {
-              const currentDestinations = getValues("destinations") || []
+              const currentDestinations = getValues("destinations") || [];
               reset({
                 ...getValues(),
                 destinations: [...currentDestinations, ""],
-              })
+              });
             }}
             className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
           >
@@ -685,7 +979,9 @@ export function TourForm({ tourId }: TourFormProps) {
 
         {/* Premium Inclusions */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-700">Премиум включения</label>
+          <label className="block text-sm font-medium text-slate-700">
+            Премиум включения
+          </label>
           {premiumInclusions.map((_, idx) => (
             <div key={idx} className="flex items-center gap-2">
               <input
@@ -696,12 +992,15 @@ export function TourForm({ tourId }: TourFormProps) {
               <button
                 type="button"
                 onClick={() => {
-                  const currentPremiumInclusions = getValues("premiumInclusions") || []
-                  const newPremiumInclusions = currentPremiumInclusions.filter((_, i) => i !== idx)
+                  const currentPremiumInclusions =
+                    getValues("premiumInclusions") || [];
+                  const newPremiumInclusions = currentPremiumInclusions.filter(
+                    (_, i) => i !== idx,
+                  );
                   reset({
                     ...getValues(),
                     premiumInclusions: newPremiumInclusions,
-                  })
+                  });
                 }}
                 className="text-red-600 hover:text-red-700"
               >
@@ -712,11 +1011,12 @@ export function TourForm({ tourId }: TourFormProps) {
           <button
             type="button"
             onClick={() => {
-              const currentPremiumInclusions = getValues("premiumInclusions") || []
+              const currentPremiumInclusions =
+                getValues("premiumInclusions") || [];
               reset({
                 ...getValues(),
                 premiumInclusions: [...currentPremiumInclusions, ""],
-              })
+              });
             }}
             className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
           >
@@ -729,7 +1029,9 @@ export function TourForm({ tourId }: TourFormProps) {
 
         {/* Included Activities */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-700">Включенные активности</label>
+          <label className="block text-sm font-medium text-slate-700">
+            Включенные активности
+          </label>
           {includedActivities.map((_, idx) => (
             <div key={idx} className="flex items-center gap-2">
               <input
@@ -740,12 +1042,14 @@ export function TourForm({ tourId }: TourFormProps) {
               <button
                 type="button"
                 onClick={() => {
-                  const currentIncludedActivities = getValues("includedActivities") || []
-                  const newIncludedActivities = currentIncludedActivities.filter((_, i) => i !== idx)
+                  const currentIncludedActivities =
+                    getValues("includedActivities") || [];
+                  const newIncludedActivities =
+                    currentIncludedActivities.filter((_, i) => i !== idx);
                   reset({
                     ...getValues(),
                     includedActivities: newIncludedActivities,
-                  })
+                  });
                 }}
                 className="text-red-600 hover:text-red-700"
               >
@@ -756,11 +1060,12 @@ export function TourForm({ tourId }: TourFormProps) {
           <button
             type="button"
             onClick={() => {
-              const currentIncludedActivities = getValues("includedActivities") || []
+              const currentIncludedActivities =
+                getValues("includedActivities") || [];
               reset({
                 ...getValues(),
                 includedActivities: [...currentIncludedActivities, ""],
-              })
+              });
             }}
             className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
           >
@@ -773,7 +1078,9 @@ export function TourForm({ tourId }: TourFormProps) {
 
         {/* Optional Activities */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-700">Опциональные активности</label>
+          <label className="block text-sm font-medium text-slate-700">
+            Опциональные активности
+          </label>
           {optionalActivities.map((_, idx) => (
             <div key={idx} className="flex items-center gap-2">
               <input
@@ -784,12 +1091,14 @@ export function TourForm({ tourId }: TourFormProps) {
               <button
                 type="button"
                 onClick={() => {
-                  const currentOptionalActivities = getValues("optionalActivities") || []
-                  const newOptionalActivities = currentOptionalActivities.filter((_, i) => i !== idx)
+                  const currentOptionalActivities =
+                    getValues("optionalActivities") || [];
+                  const newOptionalActivities =
+                    currentOptionalActivities.filter((_, i) => i !== idx);
                   reset({
                     ...getValues(),
                     optionalActivities: newOptionalActivities,
-                  })
+                  });
                 }}
                 className="text-red-600 hover:text-red-700"
               >
@@ -800,11 +1109,12 @@ export function TourForm({ tourId }: TourFormProps) {
           <button
             type="button"
             onClick={() => {
-              const currentOptionalActivities = getValues("optionalActivities") || []
+              const currentOptionalActivities =
+                getValues("optionalActivities") || [];
               reset({
                 ...getValues(),
                 optionalActivities: [...currentOptionalActivities, ""],
-              })
+              });
             }}
             className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
           >
@@ -827,8 +1137,15 @@ export function TourForm({ tourId }: TourFormProps) {
             className="hidden"
             id="image-input"
           />
-          <label htmlFor="image-input" className="cursor-pointer flex flex-col items-center gap-2">
-            <div className="text-slate-600">{uploadingImages ? "Загрузка..." : "Нажмите, чтобы загрузить изображения"}</div>
+          <label
+            htmlFor="image-input"
+            className="cursor-pointer flex flex-col items-center gap-2"
+          >
+            <div className="text-slate-600">
+              {uploadingImages
+                ? "Загрузка..."
+                : "Нажмите, чтобы загрузить изображения"}
+            </div>
           </label>
         </div>
 
@@ -844,12 +1161,12 @@ export function TourForm({ tourId }: TourFormProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    const currentImages = getValues("images") || []
-                    const newImages = currentImages.filter((_, i) => i !== idx)
+                    const currentImages = getValues("images") || [];
+                    const newImages = currentImages.filter((_, i) => i !== idx);
                     reset({
                       ...getValues(),
                       images: newImages,
-                    })
+                    });
                   }}
                   className="absolute inset-0 bg-black bg-opacity-50 rounded-lg opacity-0 group-hover:opacity-100 transition flex items-center justify-center"
                 >
@@ -868,19 +1185,22 @@ export function TourForm({ tourId }: TourFormProps) {
           <button
             type="button"
             onClick={() => {
-              const currentItinerary = getValues("itinerary") || []
+              const currentItinerary = getValues("itinerary") || [];
               reset({
                 ...getValues(),
-                itinerary: [...currentItinerary, { 
-                  title: "", 
-                  description: "",
-                  accommodation: [],
-                  meals: [],
-                  includedActivities: [],
-                  optionalActivities: [],
-                  specialInformation: "",
-                }],
-              })
+                itinerary: [
+                  ...currentItinerary,
+                  {
+                    title: "",
+                    description: "",
+                    accommodation: [],
+                    meals: [],
+                    includedActivities: [],
+                    optionalActivities: [],
+                    specialInformation: "",
+                  },
+                ],
+              });
             }}
             className="flex items-center gap-2 text-accent hover:text-orange-600 text-sm"
           >
@@ -891,7 +1211,9 @@ export function TourForm({ tourId }: TourFormProps) {
 
         {/* Itinerary Image Upload */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">Изображение маршрута</label>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Изображение маршрута
+          </label>
           <div className="border-2 border-dashed border-slate-200 rounded-lg p-4">
             {itineraryImage ? (
               <div className="relative group">
@@ -906,7 +1228,7 @@ export function TourForm({ tourId }: TourFormProps) {
                     reset({
                       ...getValues(),
                       itineraryImage: "",
-                    })
+                    });
                   }}
                   className="absolute inset-0 bg-black bg-opacity-50 rounded-lg opacity-0 group-hover:opacity-100 transition flex items-center justify-center"
                 >
@@ -919,80 +1241,105 @@ export function TourForm({ tourId }: TourFormProps) {
                   type="file"
                   accept="image/*"
                   onChange={async (e) => {
-                    const file = e.target.files?.[0]
-                    if (!file) return
-                    
-                    setUploadingImages(true)
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    setUploadingImages(true);
                     try {
-                      const { storage, auth } = getFirebaseServices()
-                      
+                      const { storage, auth } = getFirebaseServices();
+
                       if (!auth?.currentUser) {
                         await new Promise<void>((resolve, reject) => {
                           const timeout = setTimeout(() => {
-                            unsubscribe()
-                            reject(new Error("Таймаут ожидания авторизации"))
-                          }, 5000)
-                          
-                          const unsubscribe = onAuthStateChanged(auth!, (user) => {
-                            clearTimeout(timeout)
-                            unsubscribe()
-                            if (user) {
-                              resolve()
-                            } else {
-                              reject(new Error("Пользователь не авторизован"))
-                            }
-                          })
-                        })
+                            unsubscribe();
+                            reject(new Error("Таймаут ожидания авторизации"));
+                          }, 5000);
+
+                          const unsubscribe = onAuthStateChanged(
+                            auth!,
+                            (user) => {
+                              clearTimeout(timeout);
+                              unsubscribe();
+                              if (user) {
+                                resolve();
+                              } else {
+                                reject(
+                                  new Error("Пользователь не авторизован"),
+                                );
+                              }
+                            },
+                          );
+                        });
                       }
-                      
+
                       if (auth?.currentUser) {
-                        await auth.currentUser.getIdToken(true)
+                        await auth.currentUser.getIdToken(true);
                       }
-                      
-                      const storageRef = ref(storage!, `tours/${tourId || "new"}/itinerary/${Date.now()}-${file.name}`)
-                      await uploadBytes(storageRef, file)
-                      const url = await getDownloadURL(storageRef)
-                      
+
+                      const storageRef = ref(
+                        storage!,
+                        `tours/${tourId || "new"}/itinerary/${Date.now()}-${file.name}`,
+                      );
+                      await uploadBytes(storageRef, file);
+                      const url = await getDownloadURL(storageRef);
+
                       reset({
                         ...getValues(),
                         itineraryImage: url,
-                      })
+                      });
                     } catch (error: any) {
-                      console.error("Error uploading image:", error)
-                      alert(error.message || "Не удалось загрузить изображение")
+                      console.error("Error uploading image:", error);
+                      alert(
+                        error.message || "Не удалось загрузить изображение",
+                      );
                     } finally {
-                      setUploadingImages(false)
+                      setUploadingImages(false);
                     }
                   }}
                   disabled={uploadingImages}
                   className="hidden"
                   id="itinerary-image"
                 />
-                <label 
+                <label
                   htmlFor="itinerary-image"
                   className="cursor-pointer flex flex-col items-center gap-2 text-slate-600"
                 >
-                  <div>{uploadingImages ? "Загрузка..." : "Нажмите, чтобы загрузить изображение маршрута"}</div>
+                  <div>
+                    {uploadingImages
+                      ? "Загрузка..."
+                      : "Нажмите, чтобы загрузить изображение маршрута"}
+                  </div>
                 </label>
               </div>
             )}
           </div>
         </div>
-        
+
         <Accordion type="multiple" className="space-y-2">
           {itinerary.map((item, idx) => {
-            const dayTitle = watch(`itinerary.${idx}.title`) || ""
-            const dayAccommodation = watch(`itinerary.${idx}.accommodation`) || []
-            const dayMeals = watch(`itinerary.${idx}.meals`) || []
-            const dayIncludedActivities = watch(`itinerary.${idx}.includedActivities`) || []
-            const dayOptionalActivities = watch(`itinerary.${idx}.optionalActivities`) || []
-            
+            const dayTitle = watch(`itinerary.${idx}.title`) || "";
+            const dayAccommodation =
+              watch(`itinerary.${idx}.accommodation`) || [];
+            const dayMeals = watch(`itinerary.${idx}.meals`) || [];
+            const dayIncludedActivities =
+              watch(`itinerary.${idx}.includedActivities`) || [];
+            const dayOptionalActivities =
+              watch(`itinerary.${idx}.optionalActivities`) || [];
+
             return (
-              <AccordionItem key={idx} value={`day-${idx}`} className="border border-slate-200 rounded-lg px-4">
+              <AccordionItem
+                key={idx}
+                value={`day-${idx}`}
+                className="border border-slate-200 rounded-lg px-4"
+              >
                 <AccordionTrigger className="hover:no-underline">
                   <div className="flex items-center gap-3 flex-1">
-                    <span className="font-semibold text-slate-900">День {idx + 1}</span>
-                    {dayTitle && <span className="text-slate-600">- {dayTitle}</span>}
+                    <span className="font-semibold text-slate-900">
+                      День {idx + 1}
+                    </span>
+                    {dayTitle && (
+                      <span className="text-slate-600">- {dayTitle}</span>
+                    )}
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pb-4">
@@ -1015,7 +1362,11 @@ export function TourForm({ tourId }: TourFormProps) {
                     </label>
                     <BasicHtmlEditor
                       value={watch(`itinerary.${idx}.description`) || ""}
-                      onChange={(html) => setValue(`itinerary.${idx}.description`, html, { shouldValidate: true })}
+                      onChange={(html) =>
+                        setValue(`itinerary.${idx}.description`, html, {
+                          shouldValidate: true,
+                        })
+                      }
                       placeholder="Введите описание дня"
                       rows={8}
                     />
@@ -1023,26 +1374,35 @@ export function TourForm({ tourId }: TourFormProps) {
 
                   {/* Accommodation */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Размещение</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Размещение
+                    </label>
                     <div className="space-y-2">
                       {dayAccommodation.map((_, accIdx) => (
                         <div key={accIdx} className="flex items-center gap-2">
                           <input
-                            {...register(`itinerary.${idx}.accommodation.${accIdx}`)}
+                            {...register(
+                              `itinerary.${idx}.accommodation.${accIdx}`,
+                            )}
                             className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
                             placeholder="Размещение (будет автоматически переведено на все языки)"
                           />
                           <button
                             type="button"
                             onClick={() => {
-                              const currentItinerary = getValues("itinerary") || []
-                              const newAccommodation = (currentItinerary[idx]?.accommodation || []).filter((_, i) => i !== accIdx)
+                              const currentItinerary =
+                                getValues("itinerary") || [];
+                              const newAccommodation = (
+                                currentItinerary[idx]?.accommodation || []
+                              ).filter((_, i) => i !== accIdx);
                               reset({
                                 ...getValues(),
-                                itinerary: currentItinerary.map((it, i) => 
-                                  i === idx ? { ...it, accommodation: newAccommodation } : it
+                                itinerary: currentItinerary.map((it, i) =>
+                                  i === idx
+                                    ? { ...it, accommodation: newAccommodation }
+                                    : it,
                                 ),
-                              })
+                              });
                             }}
                             className="text-red-600 hover:text-red-700"
                           >
@@ -1053,14 +1413,19 @@ export function TourForm({ tourId }: TourFormProps) {
                       <button
                         type="button"
                         onClick={() => {
-                          const currentItinerary = getValues("itinerary") || []
-                          const newAccommodation = [...(currentItinerary[idx]?.accommodation || []), ""]
+                          const currentItinerary = getValues("itinerary") || [];
+                          const newAccommodation = [
+                            ...(currentItinerary[idx]?.accommodation || []),
+                            "",
+                          ];
                           reset({
                             ...getValues(),
-                            itinerary: currentItinerary.map((it, i) => 
-                              i === idx ? { ...it, accommodation: newAccommodation } : it
+                            itinerary: currentItinerary.map((it, i) =>
+                              i === idx
+                                ? { ...it, accommodation: newAccommodation }
+                                : it,
                             ),
-                          })
+                          });
                         }}
                         className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
                       >
@@ -1072,7 +1437,9 @@ export function TourForm({ tourId }: TourFormProps) {
 
                   {/* Meals */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Питание</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Питание
+                    </label>
                     <div className="space-y-2">
                       {dayMeals.map((_, mealIdx) => (
                         <div key={mealIdx} className="flex items-center gap-2">
@@ -1084,14 +1451,17 @@ export function TourForm({ tourId }: TourFormProps) {
                           <button
                             type="button"
                             onClick={() => {
-                              const currentItinerary = getValues("itinerary") || []
-                              const newMeals = (currentItinerary[idx]?.meals || []).filter((_, i) => i !== mealIdx)
+                              const currentItinerary =
+                                getValues("itinerary") || [];
+                              const newMeals = (
+                                currentItinerary[idx]?.meals || []
+                              ).filter((_, i) => i !== mealIdx);
                               reset({
                                 ...getValues(),
-                                itinerary: currentItinerary.map((it, i) => 
-                                  i === idx ? { ...it, meals: newMeals } : it
+                                itinerary: currentItinerary.map((it, i) =>
+                                  i === idx ? { ...it, meals: newMeals } : it,
                                 ),
-                              })
+                              });
                             }}
                             className="text-red-600 hover:text-red-700"
                           >
@@ -1102,14 +1472,17 @@ export function TourForm({ tourId }: TourFormProps) {
                       <button
                         type="button"
                         onClick={() => {
-                          const currentItinerary = getValues("itinerary") || []
-                          const newMeals = [...(currentItinerary[idx]?.meals || []), ""]
+                          const currentItinerary = getValues("itinerary") || [];
+                          const newMeals = [
+                            ...(currentItinerary[idx]?.meals || []),
+                            "",
+                          ];
                           reset({
                             ...getValues(),
-                            itinerary: currentItinerary.map((it, i) => 
-                              i === idx ? { ...it, meals: newMeals } : it
+                            itinerary: currentItinerary.map((it, i) =>
+                              i === idx ? { ...it, meals: newMeals } : it,
                             ),
-                          })
+                          });
                         }}
                         className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
                       >
@@ -1121,26 +1494,38 @@ export function TourForm({ tourId }: TourFormProps) {
 
                   {/* Included Activities */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Включенные активности</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Включенные активности
+                    </label>
                     <div className="space-y-2">
                       {dayIncludedActivities.map((_, actIdx) => (
                         <div key={actIdx} className="flex items-center gap-2">
                           <input
-                            {...register(`itinerary.${idx}.includedActivities.${actIdx}`)}
+                            {...register(
+                              `itinerary.${idx}.includedActivities.${actIdx}`,
+                            )}
                             className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
                             placeholder="Включенная активность (будет автоматически переведено на все языки)"
                           />
                           <button
                             type="button"
                             onClick={() => {
-                              const currentItinerary = getValues("itinerary") || []
-                              const newActivities = (currentItinerary[idx]?.includedActivities || []).filter((_, i) => i !== actIdx)
+                              const currentItinerary =
+                                getValues("itinerary") || [];
+                              const newActivities = (
+                                currentItinerary[idx]?.includedActivities || []
+                              ).filter((_, i) => i !== actIdx);
                               reset({
                                 ...getValues(),
-                                itinerary: currentItinerary.map((it, i) => 
-                                  i === idx ? { ...it, includedActivities: newActivities } : it
+                                itinerary: currentItinerary.map((it, i) =>
+                                  i === idx
+                                    ? {
+                                        ...it,
+                                        includedActivities: newActivities,
+                                      }
+                                    : it,
                                 ),
-                              })
+                              });
                             }}
                             className="text-red-600 hover:text-red-700"
                           >
@@ -1151,14 +1536,20 @@ export function TourForm({ tourId }: TourFormProps) {
                       <button
                         type="button"
                         onClick={() => {
-                          const currentItinerary = getValues("itinerary") || []
-                          const newActivities = [...(currentItinerary[idx]?.includedActivities || []), ""]
+                          const currentItinerary = getValues("itinerary") || [];
+                          const newActivities = [
+                            ...(currentItinerary[idx]?.includedActivities ||
+                              []),
+                            "",
+                          ];
                           reset({
                             ...getValues(),
-                            itinerary: currentItinerary.map((it, i) => 
-                              i === idx ? { ...it, includedActivities: newActivities } : it
+                            itinerary: currentItinerary.map((it, i) =>
+                              i === idx
+                                ? { ...it, includedActivities: newActivities }
+                                : it,
                             ),
-                          })
+                          });
                         }}
                         className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
                       >
@@ -1170,26 +1561,38 @@ export function TourForm({ tourId }: TourFormProps) {
 
                   {/* Optional Activities */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Опциональные активности</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Опциональные активности
+                    </label>
                     <div className="space-y-2">
                       {dayOptionalActivities.map((_, actIdx) => (
                         <div key={actIdx} className="flex items-center gap-2">
                           <input
-                            {...register(`itinerary.${idx}.optionalActivities.${actIdx}`)}
+                            {...register(
+                              `itinerary.${idx}.optionalActivities.${actIdx}`,
+                            )}
                             className="flex-1 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
                             placeholder="Опциональная активность (будет автоматически переведено на все языки)"
                           />
                           <button
                             type="button"
                             onClick={() => {
-                              const currentItinerary = getValues("itinerary") || []
-                              const newActivities = (currentItinerary[idx]?.optionalActivities || []).filter((_, i) => i !== actIdx)
+                              const currentItinerary =
+                                getValues("itinerary") || [];
+                              const newActivities = (
+                                currentItinerary[idx]?.optionalActivities || []
+                              ).filter((_, i) => i !== actIdx);
                               reset({
                                 ...getValues(),
-                                itinerary: currentItinerary.map((it, i) => 
-                                  i === idx ? { ...it, optionalActivities: newActivities } : it
+                                itinerary: currentItinerary.map((it, i) =>
+                                  i === idx
+                                    ? {
+                                        ...it,
+                                        optionalActivities: newActivities,
+                                      }
+                                    : it,
                                 ),
-                              })
+                              });
                             }}
                             className="text-red-600 hover:text-red-700"
                           >
@@ -1200,14 +1603,20 @@ export function TourForm({ tourId }: TourFormProps) {
                       <button
                         type="button"
                         onClick={() => {
-                          const currentItinerary = getValues("itinerary") || []
-                          const newActivities = [...(currentItinerary[idx]?.optionalActivities || []), ""]
+                          const currentItinerary = getValues("itinerary") || [];
+                          const newActivities = [
+                            ...(currentItinerary[idx]?.optionalActivities ||
+                              []),
+                            "",
+                          ];
                           reset({
                             ...getValues(),
-                            itinerary: currentItinerary.map((it, i) => 
-                              i === idx ? { ...it, optionalActivities: newActivities } : it
+                            itinerary: currentItinerary.map((it, i) =>
+                              i === idx
+                                ? { ...it, optionalActivities: newActivities }
+                                : it,
                             ),
-                          })
+                          });
                         }}
                         className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
                       >
@@ -1220,11 +1629,16 @@ export function TourForm({ tourId }: TourFormProps) {
                   {/* Special Information */}
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Особая информация (будет автоматически переведено на все языки)
+                      Особая информация (будет автоматически переведено на все
+                      языки)
                     </label>
                     <BasicHtmlEditor
                       value={watch(`itinerary.${idx}.specialInformation`) || ""}
-                      onChange={(html) => setValue(`itinerary.${idx}.specialInformation`, html, { shouldValidate: true })}
+                      onChange={(html) =>
+                        setValue(`itinerary.${idx}.specialInformation`, html, {
+                          shouldValidate: true,
+                        })
+                      }
                       placeholder="Введите особую информацию для этого дня"
                       rows={8}
                     />
@@ -1235,12 +1649,14 @@ export function TourForm({ tourId }: TourFormProps) {
                     <button
                       type="button"
                       onClick={() => {
-                        const currentItinerary = getValues("itinerary") || []
-                        const newItinerary = currentItinerary.filter((_, i) => i !== idx)
+                        const currentItinerary = getValues("itinerary") || [];
+                        const newItinerary = currentItinerary.filter(
+                          (_, i) => i !== idx,
+                        );
                         reset({
                           ...getValues(),
                           itinerary: newItinerary,
-                        })
+                        });
                       }}
                       className="flex items-center gap-2 text-red-600 hover:text-red-700 text-sm"
                     >
@@ -1250,7 +1666,7 @@ export function TourForm({ tourId }: TourFormProps) {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-            )
+            );
           })}
         </Accordion>
       </div>
@@ -1259,7 +1675,10 @@ export function TourForm({ tourId }: TourFormProps) {
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
         <h2 className="text-lg font-semibold text-slate-900">Даты туров</h2>
         {dateFields.map((field, idx) => (
-          <div key={field.id} className="border border-slate-200 rounded-lg p-4 space-y-3">
+          <div
+            key={field.id}
+            className="border border-slate-200 rounded-lg p-4 space-y-3"
+          >
             <div className="flex items-center justify-between">
               <h3 className="font-medium text-slate-900">Дата {idx + 1}</h3>
               <button
@@ -1272,7 +1691,9 @@ export function TourForm({ tourId }: TourFormProps) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Дата начала</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Дата начала
+                </label>
                 <input
                   {...register(`dates.${idx}.startDate`)}
                   type="date"
@@ -1280,7 +1701,9 @@ export function TourForm({ tourId }: TourFormProps) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Дата окончания</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Дата окончания
+                </label>
                 <input
                   {...register(`dates.${idx}.endDate`)}
                   type="date"
@@ -1290,7 +1713,9 @@ export function TourForm({ tourId }: TourFormProps) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Статус</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Статус
+                </label>
                 <select
                   {...register(`dates.${idx}.status`)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
@@ -1301,7 +1726,9 @@ export function TourForm({ tourId }: TourFormProps) {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Цена</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Цена
+                </label>
                 <input
                   {...register(`dates.${idx}.price`)}
                   type="text"
@@ -1320,7 +1747,7 @@ export function TourForm({ tourId }: TourFormProps) {
               endDate: "",
               status: "Available" as const,
               price: "",
-            })
+            });
           }}
           className="flex items-center gap-2 text-accent hover:text-orange-600"
         >
@@ -1331,10 +1758,14 @@ export function TourForm({ tourId }: TourFormProps) {
 
       {/* Inclusions */}
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900">Что включено / не включено</h2>
+        <h2 className="text-lg font-semibold text-slate-900">
+          Что включено / не включено
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-sm font-medium text-slate-700 mb-3">Включено</h3>
+            <h3 className="text-sm font-medium text-slate-700 mb-3">
+              Включено
+            </h3>
             <div className="space-y-2">
               {inclusions.included?.map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2">
@@ -1346,12 +1777,21 @@ export function TourForm({ tourId }: TourFormProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      const currentInclusions = getValues("inclusions") || { included: [], notIncluded: [] }
-                      const newIncluded = currentInclusions.included?.filter((_, i) => i !== idx) || []
+                      const currentInclusions = getValues("inclusions") || {
+                        included: [],
+                        notIncluded: [],
+                      };
+                      const newIncluded =
+                        currentInclusions.included?.filter(
+                          (_, i) => i !== idx,
+                        ) || [];
                       reset({
                         ...getValues(),
-                        inclusions: { ...currentInclusions, included: newIncluded },
-                      })
+                        inclusions: {
+                          ...currentInclusions,
+                          included: newIncluded,
+                        },
+                      });
                     }}
                     className="text-red-600 hover:text-red-700"
                   >
@@ -1362,11 +1802,17 @@ export function TourForm({ tourId }: TourFormProps) {
               <button
                 type="button"
                 onClick={() => {
-                  const currentInclusions = getValues("inclusions") || { included: [], notIncluded: [] }
+                  const currentInclusions = getValues("inclusions") || {
+                    included: [],
+                    notIncluded: [],
+                  };
                   reset({
                     ...getValues(),
-                    inclusions: { ...currentInclusions, included: [...(currentInclusions.included || []), ""] },
-                  })
+                    inclusions: {
+                      ...currentInclusions,
+                      included: [...(currentInclusions.included || []), ""],
+                    },
+                  });
                 }}
                 className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
               >
@@ -1376,7 +1822,9 @@ export function TourForm({ tourId }: TourFormProps) {
             </div>
           </div>
           <div>
-            <h3 className="text-sm font-medium text-slate-700 mb-3">Не включено</h3>
+            <h3 className="text-sm font-medium text-slate-700 mb-3">
+              Не включено
+            </h3>
             <div className="space-y-2">
               {inclusions.notIncluded?.map((item, idx) => (
                 <div key={idx} className="flex items-center gap-2">
@@ -1388,12 +1836,21 @@ export function TourForm({ tourId }: TourFormProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      const currentInclusions = getValues("inclusions") || { included: [], notIncluded: [] }
-                      const newNotIncluded = currentInclusions.notIncluded?.filter((_, i) => i !== idx) || []
+                      const currentInclusions = getValues("inclusions") || {
+                        included: [],
+                        notIncluded: [],
+                      };
+                      const newNotIncluded =
+                        currentInclusions.notIncluded?.filter(
+                          (_, i) => i !== idx,
+                        ) || [];
                       reset({
                         ...getValues(),
-                        inclusions: { ...currentInclusions, notIncluded: newNotIncluded },
-                      })
+                        inclusions: {
+                          ...currentInclusions,
+                          notIncluded: newNotIncluded,
+                        },
+                      });
                     }}
                     className="text-red-600 hover:text-red-700"
                   >
@@ -1404,11 +1861,20 @@ export function TourForm({ tourId }: TourFormProps) {
               <button
                 type="button"
                 onClick={() => {
-                  const currentInclusions = getValues("inclusions") || { included: [], notIncluded: [] }
+                  const currentInclusions = getValues("inclusions") || {
+                    included: [],
+                    notIncluded: [],
+                  };
                   reset({
                     ...getValues(),
-                    inclusions: { ...currentInclusions, notIncluded: [...(currentInclusions.notIncluded || []), ""] },
-                  })
+                    inclusions: {
+                      ...currentInclusions,
+                      notIncluded: [
+                        ...(currentInclusions.notIncluded || []),
+                        "",
+                      ],
+                    },
+                  });
                 }}
                 className="flex items-center gap-2 text-sm text-accent hover:text-orange-600"
               >
@@ -1422,14 +1888,19 @@ export function TourForm({ tourId }: TourFormProps) {
 
       {/* Is this trip right for you? */}
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900">Подходит ли вам это путешествие?</h2>
+        <h2 className="text-lg font-semibold text-slate-900">
+          Подходит ли вам это путешествие?
+        </h2>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            Подходит ли вам это путешествие? (будет автоматически переведено на все языки)
+            Подходит ли вам это путешествие? (будет автоматически переведено на
+            все языки)
           </label>
           <BasicHtmlEditor
             value={isThisTripRightForYou}
-            onChange={(html) => setValue("isThisTripRightForYou", html, { shouldValidate: true })}
+            onChange={(html) =>
+              setValue("isThisTripRightForYou", html, { shouldValidate: true })
+            }
             placeholder="Введите информацию о том, подходит ли это путешествие"
             rows={8}
           />
@@ -1445,7 +1916,9 @@ export function TourForm({ tourId }: TourFormProps) {
           </label>
           <BasicHtmlEditor
             value={accommodationRichText}
-            onChange={(html) => setValue("accommodationRichText", html, { shouldValidate: true })}
+            onChange={(html) =>
+              setValue("accommodationRichText", html, { shouldValidate: true })
+            }
             placeholder="Введите информацию о размещении"
             rows={8}
           />
@@ -1454,14 +1927,18 @@ export function TourForm({ tourId }: TourFormProps) {
 
       {/* Joining Point */}
       <div className="bg-white rounded-lg border border-slate-200 p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-slate-900">Точка отправления</h2>
+        <h2 className="text-lg font-semibold text-slate-900">
+          Точка отправления
+        </h2>
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
             Точка отправления (будет автоматически переведено на все языки)
           </label>
           <BasicHtmlEditor
             value={joiningPoint}
-            onChange={(html) => setValue("joiningPoint", html, { shouldValidate: true })}
+            onChange={(html) =>
+              setValue("joiningPoint", html, { shouldValidate: true })
+            }
             placeholder="Введите информацию о точке отправления"
             rows={8}
           />
@@ -1475,7 +1952,11 @@ export function TourForm({ tourId }: TourFormProps) {
           disabled={isSubmitting}
           className="flex-1 bg-accent text-white py-3 rounded-lg hover:bg-orange-600 transition disabled:opacity-50"
         >
-          {isSubmitting ? "Сохранение..." : tourId ? "Обновить тур" : "Создать тур"}
+          {isSubmitting
+            ? "Сохранение..."
+            : tourId
+              ? "Обновить тур"
+              : "Создать тур"}
         </button>
         <button
           type="button"
@@ -1486,5 +1967,5 @@ export function TourForm({ tourId }: TourFormProps) {
         </button>
       </div>
     </form>
-  )
+  );
 }

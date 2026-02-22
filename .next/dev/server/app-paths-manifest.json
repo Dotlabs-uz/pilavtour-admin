@@ -1,0 +1,6 @@
+{
+  "/admin/tours/[id]/edit/page": "app/admin/tours/[id]/edit/page.js",
+  "/admin/tours/create-new/page": "app/admin/tours/create-new/page.js",
+  "/admin/tours/page": "app/admin/tours/page.js",
+  "/api/translate/route": "app/api/translate/route.js"
+}
