@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///D:/Frontent%20Sardor/Work/Travel%20Project/admin/pilavtour-admin/app/admin/layout.tsx"],"sourcesContent":["import type React from \"react\"\r\nexport default function AdminLayout({\r\n  children,\r\n}: {\r\n  children: React.ReactNode\r\n}) {\r\n  return children\r\n}\r\n"],"names":[],"mappings":";;;;AACe,SAAS,YAAY,EAClC,QAAQ,EAGT;IACC,OAAO;AACT"}}]
-}

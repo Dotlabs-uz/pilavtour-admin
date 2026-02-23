@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/middleware.ts"],"sourcesContent":["import { type NextRequest, NextResponse } from \"next/server\"\r\n\r\nexport function middleware(request: NextRequest) {\r\n  const token = request.cookies.get(\"auth-token\")\r\n\r\n  // Protect admin routes\r\n  if (request.nextUrl.pathname.startsWith(\"/admin\")) {\r\n    if (!token) {\r\n      return NextResponse.redirect(new URL(\"/login\", request.url))\r\n    }\r\n  }\r\n\r\n  return NextResponse.next()\r\n}\r\n\r\nexport const config = {\r\n  matcher: [\"/admin/:path*\"],\r\n}\r\n"],"names":[],"mappings":";;;;;;AAAA;AAAA;;AAEO,SAAS,WAAW,OAAoB;IAC7C,MAAM,QAAQ,QAAQ,OAAO,CAAC,GAAG,CAAC;IAElC,uBAAuB;IACvB,IAAI,QAAQ,OAAO,CAAC,QAAQ,CAAC,UAAU,CAAC,WAAW;QACjD,IAAI,CAAC,OAAO;YACV,OAAO,gMAAY,CAAC,QAAQ,CAAC,IAAI,IAAI,UAAU,QAAQ,GAAG;QAC5D;IACF;IAEA,OAAO,gMAAY,CAAC,IAAI;AAC1B;AAEO,MAAM,SAAS;IACpB,SAAS;QAAC;KAAgB;AAC5B"}}]
-}
