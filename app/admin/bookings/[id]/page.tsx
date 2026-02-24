@@ -7,6 +7,7 @@ import { getFirebaseServices } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import type { Booking, User, Tour } from "@/types";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function BookingDetailPage() {
   const params = useParams();
@@ -246,75 +247,7 @@ export default function BookingDetailPage() {
                   })}
                 </p>
               </div>
-              <div>
-                <label className="text-sm font-medium text-slate-600">
-                  Способ связи
-                </label>
-                <p className="text-slate-900 mt-1">
-                  {booking.contactMethod ?? "-"}
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-slate-600">
-                  Email
-                </label>
-                <p className="text-slate-900 mt-1">
-                  {booking.email ? (
-                    <a
-                      href={`mailto:${booking.email}`}
-                      className="text-blue-600 underline"
-                    >
-                      {booking.email}
-                    </a>
-                  ) : (
-                    "-"
-                  )}
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-slate-600">
-                  Телефон
-                </label>
-                <p className="text-slate-900 mt-1">
-                  {booking.phone ? (
-                    <a
-                      href={`https://wa.me/${booking.phone.replace(/[^0-9]/g, "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 underline"
-                    >
-                      {booking.phone}
-                    </a>
-                  ) : (
-                    "-"
-                  )}
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-slate-600">
-                  Telegram/WhatsApp
-                </label>
-                <p className="text-slate-900 mt-1">
-                  {booking.whatsappTelegram ? (
-                    <a
-                      href={`https://t.me/${booking.whatsappTelegram.replace(/^@/, "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 underline"
-                    >
-                      {booking.whatsappTelegram}
-                    </a>
-                  ) : (
-                    "-"
-                  )}
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-slate-600">
-                  Комментарий
-                </label>
-                <p className="text-slate-900 mt-1">{booking.comment ?? "-"}</p>
-              </div>
+
               <div>
                 <label className="text-sm font-medium text-slate-600">
                   Цена за человека
@@ -356,14 +289,6 @@ export default function BookingDetailPage() {
                 </label>
                 <p className="text-slate-900 mt-1">{booking.tourId ?? "-"}</p>
               </div>
-              <div>
-                <label className="text-sm font-medium text-slate-600">
-                  Имя
-                </label>
-                <p className="text-slate-900 mt-1">
-                  {booking.name ?? booking.user?.name ?? "-"}
-                </p>
-              </div>
             </div>
           </div>
 
@@ -395,28 +320,73 @@ export default function BookingDetailPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-600">
-                    ID пользователя
+                    Способ связи
                   </label>
-                  <p className="text-slate-900 mt-1">{booking.user.id}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-600">
-                    Роль
-                  </label>
-                  <p className="text-slate-900 mt-1 capitalize">
-                    {booking.user.role}
+                  <p className="text-slate-900 mt-1">
+                    {booking.contactMethod ?? "-"}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-600">
-                    Дата регистрации
+                    Email
                   </label>
                   <p className="text-slate-900 mt-1">
-                    {booking.user.createdAt.toLocaleDateString("ru-RU", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
+                    {booking.email ? (
+                      <a
+                        href={`mailto:${booking.email}`}
+                        className="text-blue-600 underline"
+                      >
+                        {booking.email}
+                      </a>
+                    ) : (
+                      "-"
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-600">
+                    Телефон
+                  </label>
+                  <p className="text-slate-900 mt-1">
+                    {booking.phone ? (
+                      <a
+                        href={`https://wa.me/${booking.phone.replace(/[^0-9]/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline"
+                      >
+                        {booking.phone}
+                      </a>
+                    ) : (
+                      "-"
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-600">
+                    Telegram/WhatsApp
+                  </label>
+                  <p className="text-slate-900 mt-1">
+                    {booking.whatsappTelegram ? (
+                      <a
+                        href={`https://t.me/${booking.whatsappTelegram.replace(/^@/, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline"
+                      >
+                        {booking.whatsappTelegram}
+                      </a>
+                    ) : (
+                      "-"
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-600">
+                    Комментарий
+                  </label>
+                  <p className="text-slate-900 mt-1">
+                    {booking.comment ?? "-"}
                   </p>
                 </div>
               </div>
@@ -425,6 +395,12 @@ export default function BookingDetailPage() {
                 Информация о пользователе не найдена
               </p>
             )}
+            <div>
+              <label className="text-sm font-medium text-slate-600">Имя</label>
+              <p className="text-slate-900 mt-1">
+                {booking.name ?? booking.user?.name ?? "-"}
+              </p>
+            </div>
           </div>
 
           {/* Tour Information */}
@@ -444,11 +420,16 @@ export default function BookingDetailPage() {
                       "Название не указано"}
                   </p>
                 </div>
-                <div>
+                <div className="flex flex-col">
                   <label className="text-sm font-medium text-slate-600">
-                    ID тура
+                    Страница тура
                   </label>
-                  <p className="text-slate-900 mt-1">{booking.tour.id}</p>
+                  <Link
+                    href={`https://pilavtour.uz/trips/${booking.tour.id}`}
+                    className="text-blue-500 cursor-pointer font-bold underline"
+                  >
+                    Перейти к туру
+                  </Link>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-600">
