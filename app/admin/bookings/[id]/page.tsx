@@ -328,7 +328,7 @@ export default function BookingDetailPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-600">
-                    Email
+                    Электронная почта
                   </label>
                   <p className="text-slate-900 mt-1">
                     {booking.email ? (
